@@ -582,3 +582,119 @@ java Main
 ```
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+# 3 - Exercices - Instructions à réaliser dans `main.java`
+
+1. Crée un objet `Etudiant` appelé `e1`.
+
+2. Affiche les informations de `e1`.
+
+3. Change le nom de `e1` en `"John"`.
+
+4. Change l’âge de `e1` en `21`.
+
+5. Change le programme de `e1` en `"Computer Science"`.
+
+6. Crée un deuxième objet `Etudiant` appelé `e2`.
+
+7. Change le nom de `e2` en `"Emily"`.
+
+8. Change la moyenne de `e2` en `91.5`.
+
+9. Affiche les informations de `e2`.
+
+10. Appelle la méthode `etudier()` pour `e1`.
+
+11. Crée un objet `Professeur` appelé `p1`.
+
+12. Change le nom de `p1` en `"Dr. Smith"`.
+
+13. Change la matière de `p1` en `"Physics"`.
+
+14. Affiche les informations de `p1`.
+
+15. Appelle la méthode `enseigner()` de `p1`.
+
+16. Crée un deuxième objet `Professeur` appelé `p2`.
+
+17. Change le nom de `p2` en `"Dr. Johnson"`.
+
+18. Change le salaire de `p2` en `90000`.
+
+19. Affiche les informations de `p2`.
+
+20. Appelle la méthode `donnerTP()` pour `p2`.
+
+21. Crée un objet `Voiture` appelé `v1`.
+
+22. Change la couleur de `v1` en `"Red"`.
+
+23. Change le propriétaire de `v1` en `"Michael"`.
+
+24. Affiche les informations de `v1`.
+
+25. Appelle la méthode `klaxonner()` pour `v1`.
+
+26. Crée un deuxième objet `Voiture` appelé `v2`.
+
+27. Change le modèle de `v2` en `"Ford Mustang"`.
+
+28. Accélère `v2` deux fois.
+
+29. Freine `v2` une fois.
+
+30. Affiche les informations de `v2`.
+
+31. Crée un objet `Hopital` appelé `h1`.
+
+32. Change le nom du directeur de `h1` en `"Dr. Williams"`.
+
+33. Change la spécialité de `h1` en `"Neurology"`.
+
+34. Affiche les informations de `h1`.
+
+35. Appelle la méthode `admettrePatient()` pour `h1`.
+
+36. Appelle la méthode `soignerPatient()` pour `h1`.
+
+37. Crée un objet `Livre` appelé `l1`.
+
+38. Change le titre de `l1` en `"Learning Java"`.
+
+39. Affiche les informations de `l1`.
+
+40. Appelle la méthode `emprunter()` sur `l1`.
+
+41. Crée un objet `Maison` appelé `m1`.
+
+42. Change le nombre de pièces de `m1` en `7`.
+
+43. Change le propriétaire de `m1` en `"Jessica"`.
+
+44. Affiche les informations de `m1`.
+
+45. Crée un objet `Animal` appelé `a1`.
+
+46. Change le nom de `a1` en `"Buddy"`.
+
+47. Change l’espèce de `a1` en `"Dog"`.
+
+48. Affiche les informations de `a1`.
+
+49. Appelle la méthode `manger()` pour `a1`.
+
+50. Appelle la méthode `consulterVeto()` pour `a1`.
+
+
