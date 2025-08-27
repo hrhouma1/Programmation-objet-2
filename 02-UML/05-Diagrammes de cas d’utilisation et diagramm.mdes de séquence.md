@@ -20,12 +20,24 @@ Un **diagramme de cas d’utilisation** montre :
 ### Exemple (réserver un billet en ligne)
 
 ```mermaid
-usecaseDiagram
-actor Client
-actor "Système de Paiement" as Paiement
-Client --> (Réserver un billet)
-(Réserver un billet) --> (Effectuer un paiement)
-Paiement --> (Effectuer un paiement)
+flowchart TD
+    %% Acteurs
+    A[Client]:::actor
+    B[Système de Paiement]:::actor
+
+    %% Cas d'utilisation (ovales)
+    UC1((Réserver un billet)):::uc
+    UC2((Effectuer un paiement)):::uc
+
+    %% Relations
+    A --> UC1
+    UC1 --> UC2
+    B --> UC2
+
+    %% Styles
+    classDef actor fill:#fff,stroke:#333,stroke-width:1px;
+    classDef uc fill:#eef,stroke:#336,stroke-width:1px,rx:28,ry:28;
+
 ```
 
 ---
