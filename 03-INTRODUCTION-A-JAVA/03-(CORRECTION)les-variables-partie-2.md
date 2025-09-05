@@ -301,8 +301,39 @@ Ce programme montre :
 
 
 
+## Bonus - narrowing
 
 
+```java
+public class TestNarrowing {
+    public static void main(String[] args) {
+        int grand = 130;        // un entier "grand"
+        byte petit = (byte) grand; // on force la conversion (int -> byte)
+
+        double reel = 45.99;    // un nombre à virgule
+        int entier = (int) reel; // on force la conversion (double -> int)
+
+        System.out.println("int 130 devient byte : " + petit);
+        System.out.println("double 45.99 devient int : " + entier);
+    }
+}
+```
+
+
+
+### Résultat affiché
+
+```
+int 130 devient byte : -126
+double 45.99 devient int : 45
+```
+
+
+
+### Explication simple
+
+* Quand on réduit la taille (`int` → `byte`), la valeur peut être **détruite** (ici 130 devient -126).
+* Quand on réduit un nombre à virgule (`double` → `int`), la partie **décimale est perdue** (45.99 devient 45).
 
 
 
