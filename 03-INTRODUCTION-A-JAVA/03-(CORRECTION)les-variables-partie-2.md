@@ -48,6 +48,22 @@ public class Exo01 {
 * `float` (32 bits) a \~7 chiffres de précision significative ; `double` (64 bits) en a \~15. Plus le type est large, plus on peut représenter précisément des décimaux.
 * Les *MIN\_VALUE* de `float`/`double` représentent le **plus petit positif > 0** (très proche de 0), pas la borne négative (c’est un piège fréquent).
 
+
+## Piège pour Character.MIN_VALUE
+
+### 1) Caster en `int` (recommandé)
+
+```java
+System.out.println(
+    "char (code units) : " + (int) Character.MIN_VALUE + " .. " + (int) Character.MAX_VALUE
+    + " (BYTES=" + Character.BYTES + ")"
+);
+// => char (code units) : 0 .. 65535 (BYTES=2)
+```
+
+
+
+
 ---
 
 # Exercice 2 — Tailles mémoire & conversions automatiques (widening)
