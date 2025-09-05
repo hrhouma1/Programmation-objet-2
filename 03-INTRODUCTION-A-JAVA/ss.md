@@ -19,17 +19,6 @@ Durée conseillée : 90–120 min — Barème total : 100 pts
 * Répondez **dans les zones “Réponse : …”** (ci-dessous) **ET/OU** directement en commentaires dans le code.
 * Compiler/exécuter souvent.
 
----
-
-## Starter (classes séparées)
-
-> Copiez chaque bloc dans un fichier sous `src/<package>/NomFichier.java`
-> Compilation (Linux/macOS) :
->
-> ```bash
-> javac -d out $(find src -name "*.java")
-> java -cp out app.Main
-> ```
 
 ### `src/app/Main.java`
 
@@ -604,7 +593,7 @@ public class Registre {
     Réponse :
     ………………………………………………………………………………………………
 
----
+
 
 ### F) Questions rapides (10 pts)
 
@@ -624,7 +613,7 @@ public class Registre {
     Réponse :
     ………………………………………………………………………………………………
 
----
+
 
 ## Rendu & barème (indicatif)
 
@@ -633,7 +622,6 @@ public class Registre {
 * F : 10 pts.
 * +10 pts bonus si code propre (nommage, `@Override`, messages clairs), et si **toutes** les erreurs attendues sont bien **commentées** + justifiées.
 
----
 
 ### Astuces pédagogiques
 
