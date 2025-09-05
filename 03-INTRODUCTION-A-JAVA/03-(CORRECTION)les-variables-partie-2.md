@@ -61,6 +61,86 @@ System.out.println(
 // => char (code units) : 0 .. 65535 (BYTES=2)
 ```
 
+# Bonus - devinez le type
+
+## 1) Copiez la classe utilitaire
+
+Créez un fichier **`TypeName.java`** et **copiez** le code ci-dessous :
+
+```java
+// TypeName.java
+public final class TypeName {
+    private TypeName() {} // classe utilitaire : pas d'instance
+
+    /** Retourne un nom de type simple (ex. "Integer", "Double", "String", "int[]", etc.). */
+    public static String of(Object x) {
+        if (x == null) return "null";
+        return x.getClass().getSimpleName();
+    }
+}
+```
+
+> Notes :
+>
+> * Ça marche pour **objets**, **tableaux** et même pour les **primitifs** grâce à **l’autoboxing** (ex. `int` devient automatiquement `Integer` quand on l’envoie à `of(Object)`).
+> * Si la valeur est `null`, on renvoie `"null"`.
+
+
+
+## 2) Créez le programme de test
+
+Créez un fichier **`DemoTypeName.java`** et **copiez** le code ci-dessous (il utilise exactement tes variables) :
+
+```java
+// DemoTypeName.java
+public class DemoTypeName {
+    public static void main(String[] args) {
+        byte    b    = 100;
+        short   s    = 30000;
+        int     i    = 2147483647;              // Integer.MAX_VALUE
+        long    l    = 9223372036854775807L;    // Long.MAX_VALUE
+        float   f    = 29.99f;
+        double  d    = 299.99;
+        char    c    = 'J';
+        boolean bool = true;
+
+        // Tests sur primitives (afficheront le nom des "wrappers" : Byte, Short, Integer, etc.)
+        System.out.println("b    -> " + TypeName.of(b));
+        System.out.println("s    -> " + TypeName.of(s));
+        System.out.println("i    -> " + TypeName.of(i));
+        System.out.println("l    -> " + TypeName.of(l));
+        System.out.println("f    -> " + TypeName.of(f));
+        System.out.println("d    -> " + TypeName.of(d));
+        System.out.println("c    -> " + TypeName.of(c));
+        System.out.println("bool -> " + TypeName.of(bool));
+
+        // Bonus : objets et tableaux
+        String txt = "Java";
+        int[] arr = {1, 2, 3};
+        System.out.println("txt  -> " + TypeName.of(txt));  // String
+        System.out.println("arr  -> " + TypeName.of(arr));  // int[]
+        System.out.println("null -> " + TypeName.of(null)); // null
+    }
+}
+```
+
+## 3) Ce que vous devriez voir (exemple)
+
+```
+b    -> Byte
+s    -> Short
+i    -> Integer
+l    -> Long
+f    -> Float
+d    -> Double
+c    -> Character
+bool -> Boolean
+txt  -> String
+arr  -> int[]
+null -> null
+```
+
+
 
 
 
