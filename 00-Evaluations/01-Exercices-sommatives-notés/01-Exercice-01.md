@@ -86,3 +86,91 @@ public class ExoCasting {
 
 **À la fin de l’exercice :** Expliquez les différences entre les trois valeurs affichées.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br/>
+<br/>
+
+# Grille d’évaluation 
+
+**Consignes de remise :**
+
+* Remettez **un seul fichier .docx** contenant vos **captures d’écran** (code, compilation, exécution) **et vos explications**.
+* **Nom de fichier** : `Nom_Prenom_ConversionsTypes_Java.docx`
+* **Captures obligatoires** (par exercice) :
+
+  1. Code source, 2) Compilation/exécution en console, 3) Éventuel message d’erreur (Ex. 5).
+* **Explications** : 5–8 lignes à la fin de chaque exercice (voir gabarit).
+
+## Barème par exercice (20 % chacun)
+
+> Total partie obligatoire = **100 %**.
+> **Bonus optionnel** = +20 % (peut porter la note finale jusqu’à 120 %; l’enseignant peut caper à 100 % si nécessaire).
+
+### Exercice 1 – Widening (20 %)
+
+* Code correct et compile (widening `byte→short→int→double`) : **8 pts**
+* Sorties console claires (toutes les valeurs affichées) : **4 pts**
+* Captures conformes (code + exécution) : **3 pts**
+* Explication (pourquoi pas d’erreur, notion d’implicite) : **5 pts**
+
+### Exercice 2 – Narrowing (20 %)
+
+* Code correct et compile (`int 900 → byte` avec cast) : **8 pts**
+* Sorties console (comparaison avant/après) : **4 pts**
+* Captures conformes (code + exécution) : **3 pts**
+* Explication (débordement/ perte d’info et raison) : **5 pts**
+
+### Exercice 3 – Perte des décimales (20 %)
+
+* Code correct (`double → int` avec cast) : **6 pts**
+* Conversion **double → float** et nouvelle valeur affichée : **4 pts**
+* Sorties console (avant/après + float) : **3 pts**
+* Captures conformes (code + exécution) : **2 pts**
+* Explication (troncature vers int, précision float vs double) : **5 pts**
+
+### Exercice 4 – `char` ↔ entiers (20 %)
+
+* Code correct (`char 'A' → int` puis `int → byte` avec cast) : **8 pts**
+* Sorties console (char, code int/ASCII, byte) : **4 pts**
+* Captures conformes (code + exécution) : **3 pts**
+* Explication (représentation numérique d’un char, codage) : **5 pts**
+
+### Exercice 5 – Erreur & correction (20 %)
+
+* **Capture du message d’erreur** lors de la compilation du code fourni : **6 pts**
+* Correction correcte (cast explicite `double → int`) + exécution : **6 pts**
+* Captures conformes (erreur, code corrigé, exécution) : **3 pts**
+* Explication (quand widening implicite vs narrowing explicite) : **5 pts**
+
+## Bonus – Mini-application (optionnel, +20 %)
+
+* Lecture utilisateur (`double`) robuste (gestion simple d’entrée) : **10 pts**
+* Conversions (`double → int → byte`) et affichage des 3 valeurs : **6 pts**
+* Explication claire des différences (originale/entière/tronquée) : **4 pts**
+
+
+
+## Règles & pénalités
+
+* **Absence de captures** demandées pour un exercice : **–50 %** sur l’exercice.
+* Code qui **ne compile pas** et aucune preuve d’exécution : **maximum 50 %** si l’analyse/justification est pertinente.
+* **Plagiat / copie** : 0 à l’exercice (ou à l’évaluation), selon la politique du cours.
+* **Clarté** (mise en page, sections nommées, noms de fichiers) : **–5 %** global si non respecté.
+
