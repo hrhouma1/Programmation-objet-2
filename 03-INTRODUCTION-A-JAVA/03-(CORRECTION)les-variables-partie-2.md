@@ -208,6 +208,102 @@ public class Exo02 {
 
 
 
+- En Java, tout programme doit être écrit dans une **classe** (ici `Exo02`).
+La méthode `main` est le **point de départ** : c’est ce qui s’exécute quand on lance le programme.
+
+
+
+#####  Les tailles en mémoire
+
+```java
+System.out.println("byte=" + Byte.BYTES + ", short=" + Short.BYTES + ...);
+```
+
+Cette partie affiche combien d’**octets** (bytes en anglais) prennent les différents types de base de Java.
+
+* `byte` : 1 octet (petit entier)
+* `short` : 2 octets (entier un peu plus grand)
+* `int` : 4 octets (entier standard)
+* `long` : 8 octets (entier très grand)
+* `float` : 4 octets (nombre à virgule)
+* `double` : 8 octets (nombre à virgule plus précis)
+* `char` : 2 octets (un caractère comme ‘A’, ‘B’, ‘é’…)
+
+Idée clé : plus le type occupe d’octets, plus il peut stocker un nombre grand ou précis.
+
+
+
+#####  Le **Widening** (conversion automatique)
+
+### Exemple 1 : des entiers vers des réels
+
+```java
+byte b = 42;
+short sh = b;     // byte -> short
+int in = sh;      // short -> int
+long lo = in;     // int -> long
+float fl = lo;    // long -> float
+double db = fl;   // float -> double
+```
+
+On part d’un petit nombre (`byte`) et on le range progressivement dans des boîtes de plus en plus grandes.
+Java fait cette conversion automatiquement car on ne risque pas de perdre d’information en passant d’un petit type à un plus grand.
+
+Mais attention : quand on passe d’un entier (`long`) à un nombre à virgule (`float`), on peut perdre un peu de précision.
+
+Exemple d’affichage :
+
+```
+42 -> 42 -> 42 -> 42 -> 42.0 -> 42.0
+```
+
+
+
+### Exemple 2 : les caractères
+
+```java
+char c = 'A'; // 'A' correspond au code Unicode 65
+int code = c; 
+long codeL = code;
+float codeF = codeL;
+double codeD = codeF;
+```
+
+Un caractère (`'A'`) est en réalité un nombre en mémoire (ici 65).
+Quand on l’agrandit vers `int`, `long`, `float`, `double`, Java garde sa valeur numérique.
+
+Affichage possible :
+
+```
+'A' -> 65 -> 65 -> 65.0 -> 65.0
+```
+
+
+
+##### Conclusion du programme
+
+```java
+System.out.println("\nObservation: passer vers float/double augmente la capacité...");
+```
+
+Les nombres à virgule (`float`, `double`) permettent de représenter beaucoup plus de valeurs, y compris des décimales.
+Mais ils ne peuvent pas représenter tous les entiers avec précision au-delà de 16 millions (`2^24`).
+Ainsi, un `long` très grand peut être arrondi s’il est converti en `float`.
+
+
+## Résumé
+
+Ce programme montre :
+
+1. Combien de place occupent les types de base en mémoire.
+2. Que Java peut convertir automatiquement un petit type vers un plus grand (**widening**).
+3. Que les nombres à virgule (`float`, `double`) sont pratiques, mais pas parfaits pour représenter de très grands entiers.
+
+
+
+
+
+
 
 
 
