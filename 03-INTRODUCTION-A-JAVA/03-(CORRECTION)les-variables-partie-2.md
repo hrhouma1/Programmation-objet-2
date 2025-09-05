@@ -144,7 +144,24 @@ null -> null
 
 
 
----
+
+
+## Exercice 1 — Déclaration & Valeurs limites (primitifs) — Explication détaillée
+
+Les types primitifs sont stockés “par valeur”, sans objet, ce qui les rend très rapides et prédictibles en mémoire. Les bornes `MIN_VALUE`/`MAX_VALUE` des entiers indiquent la plage exacte en **complément à deux** (ex. `int` : −2³¹ à 2³¹−1), tandis que pour `float`/`double`, `MIN_VALUE` est le **plus petit positif** non nul (dénormalisés inclus), ce qui surprend souvent. `char` n’est pas un “caractère ASCII” mais un code **UTF-16** non signé de 16 bits, d’où sa plage 0..65535 et le fait qu’il ne stocke pas des lettres mais des **unités de code**. Par convention, Java choisit `int` comme entier par défaut et `double` comme réel par défaut, car leurs plages/precisions suffisent à la majorité des usages. Évitez de “forcer” des types plus petits pour “gagner de la mémoire” sans nécessité : la lisibilité, la précision et la stabilité passent d’abord.
+
+
+
+
+
+
+
+
+
+
+
+
+<br/>
 
 # Exercice 2 — Tailles mémoire & conversions automatiques (widening)
 
@@ -187,7 +204,27 @@ public class Exo02 {
 * Le **widening** (élargissement) est implicite quand il n’y a pas de risque de débordement de **portée** (ex. `int -> long`).
 * Mais on peut **perdre de la précision** lors d’un passage vers `float` car un `float` ne peut pas représenter tous les entiers au-delà de \~16 millions exactement (limite du mantissa 24 bits).
 
----
+
+
+
+
+
+
+
+
+
+
+## Exercice 2 — Tailles mémoire & conversions automatiques (widening) — Explication détaillée
+
+Le **widening** est sûr du point de vue de la **portée** (range) : chaque valeur représentable dans le type source l’est dans le type cible. Néanmoins, passer d’un entier (`long`) à un flottant (`float`) peut perdre de la **précision** car un `float` ne possède qu’environ **24 bits** de mantisse, donc tous les entiers au-delà de 2²⁴ ne sont plus représentés exactement. À l’inverse, le passage `float → double` augmente la précision (mantisse \~53 bits), mais n’invente pas de l’exactitude si la valeur était déjà arrondie. Pour `char`, la conversion vers `int` expose son code numérique Unicode, ce qui est utile pour le tri, les comparaisons ou des calculs sur des codes. Retenir : widening = pas d’erreur de compilation, mais pas toujours absence de **perte d’information** (notamment entier → virgule flottante).
+
+
+
+
+
+
+<br/>
+
 
 # Exercice 3 — Conversions explicites (narrowing) & débordements
 
@@ -221,7 +258,24 @@ public class Exo03 {
 * **Narrowing** (rétrécissement) **oblige** un cast parce qu’il peut y avoir perte de **portée** et/ou **précision**.
 * Pour `300 -> byte`, on ne garde que 8 bits → résultat **44** (300 − 256) ; représentation en **complément à deux** pour négatifs.
 
----
+
+
+
+
+
+
+
+
+
+## Exercice 3 — Conversions explicites (narrowing) & débordements — Explication détaillée
+
+Le **narrowing** nécessite un cast explicite parce que le compilateur ne peut pas garantir que la cible pourra contenir la valeur sans perte. La perte peut être de **portée** (ex. `int` 300 ne tient pas dans `byte`) ou de **fraction** (ex. `float` → `long` tronque la partie décimale). Pour les entiers, Java garde uniquement les **bits de poids faible** de la représentation binaire lors d’un cast réducteur ; c’est ainsi que 300 devient 44 en `byte` (300 − 256). Ce comportement est **déterministe**, mais peut produire des résultats surprenants si on oublie la plage. Bonne pratique : vérifier les bornes ou utiliser des types plus larges, surtout en E/S, calculs financiers ou données venues d’API externes.
+
+
+
+
+<br/>
+
 
 # Exercice 4 — Précision float vs double
 
@@ -246,7 +300,15 @@ public class Exo04 {
 * `0.1` **n’est pas représentable exactement** en binaire.
 * `double` accumule l’erreur **moins** que `float` grâce à sa **mantisse** plus large. On obtient typiquement `float ≈ 999.99994` et `double ≈ 999.999999999…` ou `1000.000000000…` selon la JVM, mais rarement **exactement** 1000.
 
----
+
+
+<br/>
+
+## Exercice 4 — Précision float vs double — Explication détaillée
+
+Les nombres décimaux “simples” comme 0,1 ne sont **pas représentables exactement** en binaire IEEE-754 ; ce qui est représenté est la **valeur la plus proche**. Sur 10 000 additions, ces micro-erreurs d’arrondi s’agrègent, créant un écart observable ; `double` accumule moins d’erreur que `float` grâce à sa mantisse plus longue. C’est pour cela qu’en calcul **scientifique**, **financier** (avec d’autres précautions) et **statistique**, `double` est préféré. Pour des montants d’argent, on n’utilise généralement **pas** `float`/`double` directement : on travaille en **entiers** (cents) ou avec `BigDecimal`. La règle d’or : éviter `float` sauf contrainte mémoire/perf, et accepter que `double` reste **approché** (impliquer un arrondi d’affichage).
+
+
 
 # Exercice 5 — Strings (références) : pool, `==` vs `equals`
 
