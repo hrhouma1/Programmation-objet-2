@@ -750,6 +750,108 @@ public class Exo20 {
 }
 ```
 
+
+
+
+
+
+---
+
+## Exercice 5 — Strings (références) : pool, `==` vs `equals` — Explication détaillée
+
+`String` est un **type référence** immuable, interné lorsqu’il provient d’un **littéral** : la JVM peut réutiliser la même instance pour `'Java'` répété. `new String("Java")` force la création d’un **nouvel objet** sur le tas, avec une **adresse différente** bien que le contenu soit identique. L’opérateur `==` compare les **références** (identité), donc dépend du pool/interning ; `equals` compare les **séquences de caractères** (contenu), ce qu’on veut 99% du temps. Mémo : `a == b` n’est pas un test “texte égal”, mais “même objet”. Pour forcer l’interning d’une `String` construite à l’exécution, on peut appeler `intern()`, mais c’est rarement nécessaire en pratique.
+
+---
+
+## Exercice 6 — Déclaration, initialisation, constantes — Explication détaillée
+
+Les **constantes** `final` expriment un contrat : la valeur ne changera pas après initialisation, ce qui améliore lisibilité, **sécurité** (pas de modification accidentelle) et optimisation potentielle par la JVM/JIT. Nommer les constantes en **MAJUSCULES\_SNAKE\_CASE** (ex. `TAUX_TPS`) est une convention qui renforce l’intention. Évitez les **littéraux magiques** dispersés : centraliser les taux, offsets physiques, tailles de buffers, etc. L’usage de `printf`/`format` assure un rendu cohérent (ex. 2 décimales pour les montants) et évite les surprises avec la concaténation implicite. Enfin, privilégier des **noms parlants** (ex. `salaireAnnuel`) réduit la charge cognitive et les erreurs.
+
+---
+
+## Exercice 7 — Opérateurs arithmétiques & d’assignation — Explication détaillée
+
+La **division entière** tronque systématiquement la partie décimale (pas d’arrondi), d’où `17/5 == 3`. L’opérateur `%` (modulo) est crucial pour les décompositions (monnaie, horloges), les **tests de parité** (`x%2==0`) ou les pas circulaires (indices d’anneaux). Les opérateurs combinés (`+=`, `*=`, etc.) n’ajoutent pas de sémantique mais clarifient la **mutation** de la variable et évitent la répétition. Attention avec l’ordre : `x *= 2 + 1` n’est pas `x *= 2; x += 1;` mais `x = x * (2 + 1)`. Enfin, surveiller les **overflows** silencieux en `int` lors de multiplications : préférer `long` si le résultat peut croître.
+
+---
+
+## Exercice 8 — Pré/Post-incrémentation — Explication détaillée
+
+`++i` (pré-incrément) modifie **puis** renvoie, `i++` (post-incrément) renvoie **puis** modifie : la différence apparaît dans les **expressions composées**. Dans `i++ + ++i`, l’ordre d’évaluation à gauche-droite importe : on lit la valeur **avant** incrément pour `i++`, puis on incrémente **avant** lecture pour `++i`. Mélanger pré/post incréments dans la même expression réduit la lisibilité et favorise les bugs ; préférez des **lignes séparées**. Les effets de bord sont encore plus piégeux en présence d’appels de méthodes (surtout si des arguments sont modifiés). Idéalement, maintenez les expressions **pures** et séparez calculs et mutations.
+
+---
+
+## Exercice 9 — Comparaisons & booléens — Explication détaillée
+
+Les opérateurs de comparaison produisent **toujours** des booléens, chaînables avec `&&`, `||` et `!`. Le **court-circuit** évite d’évaluer la droite si le résultat est déjà déterminé par la gauche (`false && …` ou `true || …`), ce qui est utile pour protéger des appels **coûteux** ou **dangereux** (`obj != null && obj.isReady()`). Factoriser en conditions intermédiaires (`condAge`, `condResid`) améliore la **testabilité** (on imprime chaque sous-résultat) et le débogage. Évitez de coder des conditions **trop denses** : la décomposition montre la logique métier et simplifie les corrections. Enfin, rappelez que `=` n’est pas `==` (affectation vs comparaison) — une source classique d’erreurs dans d’autres langages, moins en Java car le typage aide.
+
+---
+
+## Exercice 10 — Table de vérité mini — Explication détaillée
+
+Générer la table systématiquement renforce l’intuition sur `&&`, `||` et `!`. Retenez : `&&` n’est `true` que si **tous** les opérandes sont `true`, `||` est `true` si **au moins un** l’est, et `!` inverse la vérité. Cette base se généralise à des expressions complexes ; on peut raisonner par **algebra booléenne** (De Morgan : `!(A && B) == !A || !B`). Dans la pratique, sachez choisir entre court-circuit (`&&`/`||`) et opérateurs sans court-circuit (`&`/`|`) : ces derniers évaluent **toujours** la droite (utile parfois avec des flags binaires). Enfin, rappelez que l’ordre d’évaluation en Java est **défini** (gauche→droite), ce qui évite certains pièges présents dans d’autres langages.
+
+---
+
+## Exercice 11 — IMC — Explication détaillée
+
+L’IMC est sensible aux **arrondis** : arrondir à l’affichage (et non dans le calcul) limite l’erreur. Les **seuils** sont des conventions cliniques ; l’objectif ici est la manipulation de `double`, pas la validité médicale stricte. Attention aux conversions d’unités : si la taille était en **centimètres**, on diviserait d’abord par 100 ; sinon l’IMC serait 10 000× trop grand. Pour mettre au propre l’arrondi, `BigDecimal` avec un `RoundingMode` explicite garantit un comportement déterministe. En général, `double` suffit pour des calculs d’exercices, tout en rappelant que les décimaux binaires restent **approchés**.
+
+---
+
+## Exercice 12 — Rendu de monnaie (cents sûrs) — Explication détaillée
+
+Les `double` introduisent des erreurs binaires (ex. 0.1 ≠ exact), ce qui peut faire échouer des **comparaisons** et **décompositions** monétaires. Travailler en **cents (`int`)**, après un `Math.round` unique, garantit l’intégrité des montants pendant les divisions/modulos. L’ordre des **dénominations** (du plus grand au plus petit) permet une stratégie gloutonne optimale dans un système de monnaie **canonique** (comme CAD/EUR/US). Documenter la table `{valeur → libellé}` évite toute ambiguïté de lecture. Pour des systèmes complexes (rendu minimal sous contraintes), on passerait à des algorithmes de programmation dynamique, mais c’est surdimensionné ici.
+
+---
+
+## Exercice 13 — Convertisseur texte↔nombres — Explication détaillée
+
+`Integer.parseInt` et `Double.parseDouble` supposent que la chaîne est **bien formée** selon la locale US (point décimal). Une chaîne invalide lève `NumberFormatException`, qu’il faut **attraper** pour garder un programme robuste (message à l’utilisateur, valeur par défaut, etc.). L’inverse `String.valueOf` est **totalement sûr** (il ne lève pas d’exception). En contexte international, préférez `NumberFormat`/`DecimalFormat` pour respecter la **locale** (virgules, espaces insécables). Ne confondez pas `toString()` d’un objet et `String.valueOf(x)` : le second gère aussi les **primitifs** et `null` (renvoie `"null"`).
+
+---
+
+## Exercice 14 — Calculatrice formatée — Explication détaillée
+
+`System.out.printf` utilise des **spécificateurs** C-like : `%.2f` = flottant sur 2 décimales, `%n` = saut de ligne portable. Pour des sorties alignées, `%-10.2f` aligne à gauche sur 10 colonnes par exemple. Attention à la **division** : `a/b` entre `double` fait une division flottante, mais `int/int` bascule en division entière (convertissez explicitement au besoin). Évitez d’additionner des `String` et nombres dans des boucles intempestives (création d’objets) ; une `StringBuilder` ou `printf` est souvent plus performant et clair. Enfin, pour des devises, combinez formatage avec la **locale** (ex. `NumberFormat.getCurrencyInstance(locale)`).
+
+---
+
+## Exercice 15 — Températures & constantes — Explication détaillée
+
+Les conversions utilisent des **constantes physiques** (`273.15`) ; les mettre en `final` évite les fautes de frappe et harmonise tout le code. Soyez attentif à la **priorité** des opérateurs : `C * 9.0 / 5.0 + 32.0` est lisible et non soumis à la division entière. En changeant d’unité (Kelvin↔Celsius), on n’applique que des **translations** (offsets), ce qui se prête à l’extraction de fonctions pures. Pour l’affichage, fixer **1 décimale** est un compromis : suffisant pour des températures au quotidien, sans prétendre à la mesure scientifique. Sur un TP, demander un **arrondi explicite** (Math.round / format) vaut mieux que de laisser le défaut.
+
+---
+
+## Exercice 16 — Identifiant simple (char & règles) — Explication détaillée
+
+Valider caractère par caractère renforce la compréhension de `char`/`Character` et évite de “magier” des regex. `Character.isUpperCase` et `Character.isDigit` sont **Unicode-aware**, donc plus sûrs que des tests `c >= 'A' && c <= 'Z'`. Penser à **vérifier la longueur** d’abord évite des `StringIndexOutOfBoundsException`. Pour des formats plus stricts, on ajouterait des **règles d’entreprise** (ex. pas de séquences “0000”, blacklist de lettres ambiguës). La même technique se généralise à des validateurs d’IBAN, d’identifiants étudiants, ou des “slugs” de fichiers.
+
+---
+
+## Exercice 17 — Bornes avant narrowing — Explication détaillée
+
+Contrôler les bornes avant cast réduit à zéro le risque d’**overflow silencieux**, qui est l’un des bugs les plus coûteux à diagnostiquer. Cela documente l’intention : on **accepte** de perdre de l’information uniquement si la valeur est dans l’intervalle prévu. Dans des API, on renverra idéalement un **statut** (boolean/Optional/Try) plutôt que de caster aveuglément. Pour des conversions massives (fichiers, flux), on mesure d’abord la **distribution** des valeurs pour choisir un type cible pertinent. Enfin, souvenez-vous : `short`/`byte` ne sont pas “plus rapides” que `int` sur la JVM moderne ; choisissez-les pour la **contrainte métier**, pas pour des optimisations spéculatives.
+
+---
+
+## Exercice 18 — Mini-benchmark précision — Explication détaillée
+
+La somme 1..1 000 000 vaut **500 000 500 000**, qui dépasse `Integer.MAX_VALUE` (**2 147 483 647**) : on obtient une valeur **wrap-around** (overflow) sans exception — d’où l’intérêt de planifier le **type du résultat** (`long`). Avec `double`, accumuler des micro-décimales (1e-6) expose l’**erreur d’arrondi** ; le total peut être légèrement < ou > 1.0 selon l’ordre d’addition. Les algorithmes **compensés** (Kahan, Neumaier) réduisent cette erreur lors d’accumulations massives. Pour des besoins financiers, préférez `BigDecimal` (avec `MathContext` et `RoundingMode`). En synthèse : **anticipez** la plage et la précision et testez des cas limites.
+
+---
+
+## Exercice 19 — Opérateurs logiques composés — Explication détaillée
+
+Exprimer les conditions en variables nommées (`condAge`, `condRevenu`) rend le code **auto-documenté**, facilite les logs (“quelle condition a échoué ?”) et favorise les tests unitaires ciblés. L’ordre des tests peut aussi être un **levier de performance** si certains sont coûteux (I/O, base de données) : placez-les à droite dans un `&&` pour profiter du court-circuit. Les booléens négatifs (`!aCasier`) sont parfois moins lisibles — envisager de renommer la variable (`aCasier` → `aCasierJudiciaire`) ou inverser la logique côté donnée. Gardez un **seuil** en constante (`MIN_REVENUS`) plutôt que litéral magique. Enfin, évitez d’imbriquer trop profondément : décomposer en fonctions lisibles.
+
+---
+
+## Exercice 20 — Lecture de code (prédire la sortie) — Explication détaillée
+
+La prédiction correcte repose sur quatre points : **division entière** (`5/2 == 2`), **promotion** en double (`a/(double)b`), **ordre d’évaluation** et **pré/post-incrément**, puis **identité vs égalité** des `String` et **court-circuit** logique. Les appels `f()` et `t()` montrent visuellement le court-circuit : `true || f()` n’appelle pas `f()`, tandis que `false || t()` appelle `t()`. La construction de `s1` par concaténation de **littéraux** peut être internée au compile-time, alors que `new String("Java")` crée un objet distinct en mémoire. L’**ordre** (`++x` avant affichage, `x++` après) explique la séquence `11`, `11`, `12`. Savoir dérouler ces règles mentalement est crucial pour analyser des expressions plus longues et repérer les effets de bord.
+
+
 **Sortie attendue (ligne par ligne) :**
 
 ```
