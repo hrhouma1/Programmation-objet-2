@@ -201,15 +201,16 @@ public class Facture implements Payable {
 
 ```mermaid
 classDiagram
-    interface Payable {
-        +montantHT()
-        +montantTTC()
-    }
-    class Facture {
-        -montant : double
-        +montantHT()
-    }
-    Payable <|.. Facture
+class Payable {
+  <<interface>>
+  +montantHT()
+  +montantTTC()
+}
+class Facture {
+  -montant : double
+  +montantHT()
+}
+Payable <|.. Facture
 ```
 
 
