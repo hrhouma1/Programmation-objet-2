@@ -202,12 +202,12 @@ public class Facture implements Payable {
 ```mermaid
 classDiagram
     interface Payable {
-        +montantHT() double
-        +montantTTC() double
+        +montantHT()
+        +montantTTC()
     }
     class Facture {
-        -double montant
-        +montantHT() double
+        -montant : double
+        +montantHT()
     }
     Payable <|.. Facture
 ```
