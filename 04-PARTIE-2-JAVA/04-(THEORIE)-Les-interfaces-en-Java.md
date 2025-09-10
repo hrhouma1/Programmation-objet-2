@@ -382,3 +382,294 @@ java -cp out Main
 5. Conflits → résolus via `Interface.super.methode()`.
 6. Interfaces fonctionnelles = base des **lambdas** et **API Streams**.
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br/>
+<br/>
+<br/>
+
+### Annexe A — Contrat `Vehicule` et implémentations
+
+```mermaid
+classDiagram
+class Vehicule {
+  <<interface>>
+  +demarrer()
+  +arreter()
+  %% La vraie implémentation "default" n'est pas visible en UML ; indiquée ici comme note %%
+}
+class Voiture {
+  +demarrer()
+  +arreter()
+}
+class Bus {
+  +demarrer()
+  +arreter()
+  +klaxonner()  %% hérite de la default "klaxonner()" de Vehicule %%
+}
+Vehicule <|.. Voiture
+Vehicule <|.. Bus
+```
+
+---
+
+### Annexe B — Interface de constantes (contrat de valeurs) + multi-implémentation
+
+```mermaid
+classDiagram
+class Vehicule {
+  <<interface>>
+  +demarrer()
+  +arreter()
+}
+class Constantes {
+  <<interface>>
+  +VITESSE_MAX : int = 120
+}
+class Moto {
+  +demarrer()
+  +arreter()
+}
+Moto ..|> Vehicule
+Moto ..|> Constantes
+```
+
+---
+
+### Annexe C — Méthodes `default`/`static`/`private` (vue conceptuelle)
+
+```mermaid
+classDiagram
+class Logger {
+  <<interface>>
+  %% Java 9+ private helper pour factorisation interne %%
+  -log(msg : String)  %% private (non accessible aux implémenteurs) %%
+  +info(msg : String)  %% default %%
+  +error(msg : String) %% default %%
+}
+class MathUtil {
+  <<interface>>
+  +carre(x : int) int   %% static %%
+}
+```
+
+> Remarque : Mermaid ne fait pas la différence d’exécution entre `default` et `abstract`. Les notes ci-dessus documentent l’intention Java.
+
+---
+
+### Annexe D — Héritage multiple d’interfaces
+
+```mermaid
+classDiagram
+class Volant {
+  <<interface>>
+  +voler()
+}
+class Nageant {
+  <<interface>>
+  +nager()
+}
+class Canard {
+  +voler()
+  +nager()
+}
+Canard ..|> Volant
+Canard ..|> Nageant
+```
+
+---
+
+### Annexe E — Conflit de méthodes par défaut et résolution via `Interface.super`
+
+```mermaid
+classDiagram
+class A {
+  <<interface>>
+  +saluer()  %% default %%
+}
+class B {
+  <<interface>>
+  +saluer()  %% default %%
+}
+class C {
+  +saluer()  %% résout le conflit : A.super.saluer(); B.super.saluer(); %%
+}
+C ..|> A
+C ..|> B
+```
+
+---
+
+### Annexe F — Interface fonctionnelle et lambdas
+
+```mermaid
+classDiagram
+class Calculateur {
+  <<interface>>
+  +operation(a:int, b:int) int  %% Unique méthode abstraite => @FunctionalInterface %%
+}
+class LambdaAddition {
+  %% Représentation conceptuelle d'une lambda (x,y)->x+y conforme à Calculateur %%
+}
+LambdaAddition ..|> Calculateur
+```
+
+---
+
+### Annexe G — Pattern Plugin (extensibilité par contrat)
+
+```mermaid
+classDiagram
+class Plugin {
+  <<interface>>
+  +getNom() String
+  +executer() void
+}
+class PluginImpression {
+  +getNom() String
+  +executer() void
+}
+class PluginExportPDF {
+  +getNom() String
+  +executer() void
+}
+class PluginManager {
+  -plugins : List<Plugin>
+  +ajouter(p:Plugin) void
+  +executerTous() void
+}
+PluginImpression ..|> Plugin
+PluginExportPDF ..|> Plugin
+PluginManager "1" o-- "*" Plugin : agrégation
+```
+
+---
+
+### Annexe H — Contrat + polymorphisme d’utilisation
+
+```mermaid
+classDiagram
+class MainApp {
+  +main(args:String[]) void
+  %% Utilise le type interface pour invoquer des implémentations hétérogènes %%
+}
+MainApp ..> Vehicule : dépendance (utilise)
+Voiture ..|> Vehicule
+Bus ..|> Vehicule
+Moto ..|> Vehicule
+```
+
+---
+
+### Annexe I — Interfaces hiérarchiques (interface qui étend interface)
+
+```mermaid
+classDiagram
+class Vehicule {
+  <<interface>>
+  +demarrer()
+  +arreter()
+}
+class VehiculeMotorise {
+  <<interface>>
+  +demarrer()
+  +arreter()
+  +niveauCarburant() int
+}
+class Voiture {
+  +demarrer()
+  +arreter()
+  +niveauCarburant() int
+}
+VehiculeMotorise --|> Vehicule  : extends
+Voiture ..|> VehiculeMotorise
+```
+
+---
+
+### Annexe J — Vue « paquetages » (représentation logique)
+
+> Mermaid n’a pas de *package diagram* natif ; on illustre l’organisation avec un graphe.
+
+```mermaid
+flowchart LR
+  subgraph com.app
+    Main[Main]
+  end
+  subgraph com.vehicules
+    IV[Vehicule <<interface>>]
+    Voit[Voiture]
+    Bus[Bus]
+    Moto[Moto]
+  end
+  subgraph com.util
+    Log[Logger <<interface>>]
+    Mth[MathUtil <<interface>>]
+  end
+  Main --> IV
+  Voit --- IV
+  Bus --- IV
+  Moto --- IV
+  Log -. par défaut .- Bus
+  Mth -. static .- Main
+```
+
+---
+
+### Annexe K — Séquence : résolution d’un conflit `default`
+
+```mermaid
+sequenceDiagram
+  participant caller as caller
+  participant c as C (impl A,B)
+  participant A as A.default
+  participant B as B.default
+
+  caller->>c: saluer()
+  activate c
+  c->>A: A.super.saluer()
+  A-->>c: "Bonjour de A"
+  c->>B: B.super.saluer()
+  B-->>c: "Bonjour de B"
+  c-->>caller: (concatène/compose la sortie)
+  deactivate c
+```
+
+---
+
+### Annexe L — Interfaces + Generics (contrat paramétré)
+
+```mermaid
+classDiagram
+class Repository~T~ {
+  <<interface>>
+  +save(entity:T) void
+  +findById(id:long) T
+}
+class User { +id:long; +name:String }
+class UserRepository {
+  +save(User) void
+  +findById(long) User
+}
+UserRepository ..|> Repository~User~
+```
