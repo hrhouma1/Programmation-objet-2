@@ -14,6 +14,7 @@
    * Que se passe-t-il ? Pourquoi ?
 
 
+<br/>
 
 ### Exercice 2 – Méthodes protégées
 
@@ -23,6 +24,7 @@
 4. Essaie d’appeler `manger()` depuis `Main`. Est-ce possible ?
 
 
+<br/>
 
 ### Exercice 3 – Package-private (visibilité par défaut)
 
@@ -34,6 +36,7 @@
 
    * Que constates-tu ?
 
+<br/>
 
 
 ### Exercice 4 – Résumé des niveaux de visibilité
@@ -48,8 +51,11 @@ Complète ce tableau en testant avec ton code :
 | public            |             |              |             |                   |
 
 
+<br/>
 
 ## Partie 2 – Paquetages (Packages)
+
+<br/>
 
 ### Exercice 5 – Organisation en packages
 
@@ -67,6 +73,7 @@ Complète ce tableau en testant avec ton code :
 4. Ajoute une classe `Main` dans un autre package `com.app` qui importe `com.banque.*` et utilise `Client` et `Compte`.
 
 
+<br/>
 
 ### Exercice 6 – Conflit de noms
 
@@ -81,7 +88,7 @@ Complète ce tableau en testant avec ton code :
    * Dans `com.voitures`, crée une classe `Chien`.
 2. Dans `Main`, importe les deux et montre comment résoudre le conflit de nom avec le **nom qualifié complet** (`com.animaux.Chien`, `com.voitures.Chien`).
 
-
+<br/>
 
 ### Exercice 7 – Accès entre packages
 
