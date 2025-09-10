@@ -1,4 +1,4 @@
-# 📘 Cours Exhaustif sur les Interfaces en Java
+# 📘 Cours  sur les Interfaces en Java
 
 ## 1. Introduction
 
