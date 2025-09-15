@@ -524,15 +524,92 @@ C ..|> B
 
 ```mermaid
 classDiagram
+class Calculateur
+<<interface>> Calculateur
+Calculateur : +operation(a:int, b:int) int
+
+class LambdaAddition
+LambdaAddition ..|> Calculateur
+```
+
+
+
+---
+
+Tu as deux petits soucis qui font planter Mermaid sur GitHub :
+
+1. `<<interface>>` ne doit pas être placé **dans** le bloc de la classe. Il faut le mettre **au niveau racine** (stéréotype appliqué à la classe).
+2. Les commentaires `%%` **à l’intérieur des accolades** d’une classe provoquent souvent une erreur du parseur GitHub. Mets-les hors des blocs ou supprime-les.
+
+Voici trois versions qui passent sur GitHub.
+
+---
+
+## Version simple et correcte
+
+```mermaid
+classDiagram
+class Calculateur
+<<interface>> Calculateur
+Calculateur : +operation(a:int, b:int) int
+
+class LambdaAddition
+LambdaAddition ..|> Calculateur
+```
+
+---
+
+## Version avec blocs de classe (sans commentaires internes)
+
+```mermaid
+classDiagram
 class Calculateur {
-  <<interface>>
-  +operation(a:int, b:int) int  %% Unique méthode abstraite => @FunctionalInterface %%
+  +operation(a:int, b:int) int
 }
+<<interface>> Calculateur
+
 class LambdaAddition {
-  %% Représentation conceptuelle d'une lambda (x,y)->x+y conforme à Calculateur %%
+  +operation(a:int, b:int) int
 }
 LambdaAddition ..|> Calculateur
 ```
+
+---
+
+## Version avec alias lisible
+
+```mermaid
+classDiagram
+class Calculateur
+<<interface>> Calculateur
+Calculateur : +operation(a:int, b:int) int
+
+class "Lambda (x,y) -> x + y" as LambdaAddition
+LambdaAddition : +operation(a:int, b:int) int
+LambdaAddition ..|> Calculateur
+```
+
+---
+
+Notes utiles :
+
+* Évite les `{}` vides suivies immédiatement d’une relation sur la même ligne. Laisse toujours une ligne vide après un bloc.
+* Si tu veux absolument mettre des commentaires, place-les **hors** des blocs de classe :
+  `%% Ceci est un commentaire valide au niveau racine`
+* Si ton dépôt utilise une ancienne version de Mermaid, essaie aussi `classDiagram-v2` :
+
+```mermaid
+classDiagram-v2
+class Calculateur
+<<interface>> Calculateur
+Calculateur : +operation(a:int, b:int) int
+
+class LambdaAddition
+LambdaAddition ..|> Calculateur
+```
+
+Dis-moi laquelle tu préfères et je l’intègre à ton support avec la même charte que le reste du cours.
+
 
 ---
 
