@@ -7,6 +7,20 @@
 
 ## Consignes (obligatoires)
 
+
+
+1. Crée une interface `Affichable` avec une méthode `void afficherInfo();`.
+2. Implémente cette interface dans **deux classes différentes** (par exemple `Livre` et `Voiture`).
+
+   * Chaque classe doit avoir quelques attributs simples (titre/prix pour un livre, marque/modèle pour une voiture).
+   * La méthode `afficherInfo()` doit afficher les informations de l’objet.
+3. Dans la classe `Main` :
+
+   * Crée un tableau d’objets de type `Affichable` contenant tes deux objets.
+   * Parcours le tableau avec une boucle et appelle `afficherInfo()` sur chaque élément.
+
+
+
 * **Packages à créer :**
 
   * `tp.interfaces` → `Affichable` (et `Payant` pour la variante)
@@ -15,6 +29,9 @@
 * **`Affichable`** : méthode `void afficherInfo();`
 * **`Livre`** et **`Voiture`** implémentent `Affichable` (attributs simples, `afficherInfo()` affiche les infos).
 * **`Main`** : créer un tableau `Affichable[]`, le parcourir et appeler `afficherInfo()` sur chaque élément.
+
+
+
 
 ### Variante (optionnelle)
 
