@@ -323,3 +323,29 @@ java Main
 4. **Sauvegarde JSON “jolie”** : indenter avec 2 espaces (actuellement c’est déjà lisible, mais rends l’indentation paramétrable).
 5. **Import JSON → CSV** : proposer une option qui remplace le CSV actuel à partir d’un JSON (même structure).
 
+
+
+# Annexe - exemple de csv
+
+
+- Le programme crée automatiquement `data/scores.csv` au premier lancement, avec un en-tête et 3 exemples.
+
+Si tu veux **partir de ton propre CSV**, place un fichier à `data/scores.csv` (UTF-8) au **format exact** :
+
+```
+# name;score;timestamp
+Alice;78;2025-09-17 14:20:05
+Bob;92;2025-09-18 10:30:00
+Lina;85;2025-09-19 09:01:00
+```
+
+* **Délimiteur** : `;` (point-virgule).
+* **Date/heure** : `yyyy-MM-dd HH:mm:ss` (24h).
+* La ligne qui commence par `#` est un commentaire (facultatif).
+
+### Adapter si ton CSV est différent
+
+* Si ton fichier utilise la **virgule**: remplace `line.split(";")` par `line.split(",")`.
+* Si le **format de date** diffère: change `DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")` par ton pattern.
+
+En bref : lance `java Main` → le dossier `data/` et le `scores.csv` seront créés tout seuls.
