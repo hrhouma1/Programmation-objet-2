@@ -130,3 +130,59 @@ public class ReadAllAtOnce {
 
 **Phrase finale pour impressionner :**  
 *"En programmation comme en cuisine, tout dépend de la recette... et de votre patience !"* 🍕
+
+
+
+
+<br/>
+
+
+
+# Annexe 1 -  Historique des classes utilisées
+
+#### 1. `FileReader`
+
+* **Apparition : Java 1.1 (1997)**
+* Introduite avec les classes de base d’entrées/sorties (`java.io`).
+* Permet de lire un fichier caractère par caractère.
+
+#### 2. `IOException`
+
+* **Apparition : Java 1.0 (1996)**
+* Fait partie du tout premier package `java.io`.
+* Sert à signaler des erreurs d’E/S.
+
+#### 3. `Scanner`
+
+* **Apparition : Java 5 (2004)**
+* Introduit dans `java.util` pour simplifier la lecture (par mots, tokens, lignes, etc.).
+* Plus moderne et pratique que `BufferedReader` pour les cas simples.
+
+#### 4. `File`
+
+* **Apparition : Java 1.0 (1996)**
+* Représente les chemins et fichiers du système.
+* Base incontournable de toute manipulation de fichiers.
+
+#### 5. `BufferedReader`
+
+* **Apparition : Java 1.1 (1997)**
+* Amélioration pour la lecture **ligne par ligne** (bufferisée, donc plus rapide que `FileReader` seul).
+* Très utilisé avant l’arrivée de `Scanner`.
+
+#### 6. `Files` et `Paths` (NIO.2)
+
+* **Apparition : Java 7 (2011)**
+* `java.nio.file.Files` et `java.nio.file.Paths` introduits avec la nouvelle API NIO.2.
+* Offrent des méthodes modernes comme `Files.readAllLines()` pour lire directement tout un fichier en mémoire.
+
+
+
+###  Résumé chronologique
+
+* **Java 1.0 (1996) :** `File`, `IOException`
+* **Java 1.1 (1997) :** `FileReader`, `BufferedReader`
+* **Java 5 (2004) :** `Scanner`
+* **Java 7 (2011) :** `Files`, `Paths`
+
+
