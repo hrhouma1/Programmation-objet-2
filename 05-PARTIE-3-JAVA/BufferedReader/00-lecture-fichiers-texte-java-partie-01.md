@@ -121,7 +121,7 @@ public class ReadAllAtOnce {
 
 ---
 
-### **Résumé avec humour pour impressionner :**
+### **Résumé avec humour :**
 
 - **Lettre par lettre :** Comme grand-mère qui apprend l'italien. (*M...a...r...g...h...e...r...i...t...a*)  
 - **Mot par mot :** Comme chercher les ingrédients clés pour la pizza (*tomates*, *mozzarella*).  
