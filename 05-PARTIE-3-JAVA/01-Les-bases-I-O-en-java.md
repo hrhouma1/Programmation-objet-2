@@ -517,7 +517,7 @@ public class WriteAllDemos {
             // - Centralise l’écriture UTF-8, très pratique pour tes TP/exemples.
             demo35_UtilitySaveString();
 
-            System.out.println("OK ✅  — Vérifie le dossier ./data");
+            System.out.println("OK  — Vérifie le dossier ./data");
         } catch (IOException e) {
             // En démo, on affiche simplement la pile. En prod, loggue proprement.
             e.printStackTrace();
