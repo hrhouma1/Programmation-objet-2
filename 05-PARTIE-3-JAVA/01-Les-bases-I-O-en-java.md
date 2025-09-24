@@ -140,7 +140,10 @@ Files.write(Path.of("data/out3.txt"),
 
 Tu as un utilitaire `FileWriter.saveStringIntoFile(path, content)` qui encapsule l’écriture UTF-8 via `FileUtils.writeStringToFile`. Très pratique pour simplifier le code d’exemples.&#x20;
 
----
+
+<br/>
+
+# Correction : Voir l'annexe 1
 
 # 4) Lire/Écrire du **JSON** (aligné sur tes exemples)
 
@@ -251,3 +254,165 @@ public class JsonWrite {
 * **Utilitaire de lecture** (String ← fichier via IOUtils) : pratique pour charger du JSON à parser.&#x20;
 * **Utilitaire d’écriture** (UTF-8 via FileUtils) : une ligne pour sauvegarder un `String`.&#x20;
 * **Exemple de création JSON** (employee + projects) : modèle à imiter pour `student.json`.&#x20;
+
+
+<br/>
+
+# Annexe 1 
+
+
+```java
+// WriteAllDemos.java
+// ------------------------------------------------------------
+// 5 recettes complètes pour écrire dans des fichiers texte en Java
+// Recette 3.1 : Classique (Writer + BufferedWriter)
+// Recette 3.2 : Append (ajout en fin de fichier)
+// Recette 3.3 : NIO (Files.writeString) — conseillée
+// Recette 3.4 : Tout le contenu d’un coup (byte[])
+// Recette 3.5 : Utilitaire (signature semblable à Apache Commons IO)
+// ------------------------------------------------------------
+// Compilation :  javac WriteAllDemos.java
+// Exécution   :  java WriteAllDemos
+// Les fichiers seront créés sous le dossier ./data
+// ------------------------------------------------------------
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
+public class WriteAllDemos {
+
+    public static void main(String[] args) {
+        try {
+            ensureDataDir();
+
+            demo31_ClassicWriterBuffered();   // 3.1
+            demo32_AppendAtEnd();             // 3.2
+            demo33_NioWriteString();          // 3.3
+            demo34_WriteAllBytes();           // 3.4
+            demo35_UtilitySaveString();       // 3.5
+
+            System.out.println("✅ Terminé. Vérifie le dossier ./data");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Crée le dossier ./data s’il n’existe pas
+    private static void ensureDataDir() throws IOException {
+        Path dataDir = Path.of("data");
+        if (!Files.exists(dataDir)) {
+            Files.createDirectories(dataDir);
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 3.1. Classique (Writer + Buffer)
+    // ------------------------------------------------------------
+    private static void demo31_ClassicWriterBuffered() {
+        File file = new File("data/out.txt");
+
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8);
+             BufferedWriter bw = new BufferedWriter(w)) {
+
+            bw.write("Bonjour !");
+            bw.newLine();
+            bw.write("Deuxième ligne.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 3.2. Append (ajouter à la fin)
+    // ------------------------------------------------------------
+    private static void demo32_AppendAtEnd() {
+        File file = new File("data/log.txt");
+
+        try (Writer w = new OutputStreamWriter(new FileOutputStream(file, true), StandardCharsets.UTF_8);
+             BufferedWriter bw = new BufferedWriter(w)) {
+
+            bw.write("Nouvelle entrée de log");
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------------------------------------------
+    // 3.3. NIO (conseillé)
+    // ------------------------------------------------------------
+    private static void demo33_NioWriteString() throws IOException {
+        Path p = Path.of("data/out2.txt");
+        Files.writeString(p, "Texte initial\n", StandardCharsets.UTF_8);
+        Files.writeString(p, "Ligne ajoutée\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+    }
+
+    // ------------------------------------------------------------
+    // 3.4. Tout le contenu d’un coup (byte[])
+    // ------------------------------------------------------------
+    private static void demo34_WriteAllBytes() throws IOException {
+        Path p = Path.of("data/out3.txt");
+        byte[] content = "Contenu complet\n".getBytes(StandardCharsets.UTF_8);
+        Files.write(p, content); // écrase par défaut si le fichier existe
+    }
+
+    // ------------------------------------------------------------
+    // 3.5. Utilitaire fourni (style Apache Commons IO)
+    //
+    // Tu disposes (selon ton projet) d’un utilitaire de type :
+    //   FileWriterUtil.saveStringIntoFile(path, content)
+    // qui encapsule l’écriture UTF-8.
+    //
+    // Ci-dessous, on implémente un utilitaire minimal avec la même signature.
+    // Si tu utilises vraiment Apache Commons IO (FileUtils.writeStringToFile),
+    // remplace simplement le corps de la méthode par l’appel à FileUtils.
+    // ------------------------------------------------------------
+    private static void demo35_UtilitySaveString() {
+        try {
+            FileWriterUtil.saveStringIntoFile("data/out_util.txt", "Hello depuis l’utilitaire (UTF-8)\n");
+            FileWriterUtil.saveStringIntoFile("data/out_util.txt", "Deuxième ligne via utilitaire\n", true); // append
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ------------------------------------------------------------
+    // Utilitaire minimal compatible avec la signature attendue.
+    // Si tu as Apache Commons IO dans le classpath, tu peux remplacer
+    // ces méthodes par :
+    //
+    //   import org.apache.commons.io.FileUtils;
+    //   public static void saveStringIntoFile(String path, String content) throws IOException {
+    //       FileUtils.writeStringToFile(new File(path), content, StandardCharsets.UTF_8, false);
+    //   }
+    //   public static void saveStringIntoFile(String path, String content, boolean append) throws IOException {
+    //       FileUtils.writeStringToFile(new File(path), content, StandardCharsets.UTF_8, append);
+    //   }
+    // ------------------------------------------------------------
+    static class FileWriterUtil {
+        public static void saveStringIntoFile(String path, String content) throws IOException {
+            // Écriture (overwrite)
+            Files.writeString(Path.of(path), content, StandardCharsets.UTF_8);
+        }
+
+        public static void saveStringIntoFile(String path, String content, boolean append) throws IOException {
+            Path p = Path.of(path);
+            if (append) {
+                Files.writeString(p, content, StandardCharsets.UTF_8,
+                        Files.exists(p) ? StandardOpenOption.APPEND : StandardOpenOption.CREATE);
+            } else {
+                Files.writeString(p, content, StandardCharsets.UTF_8);
+            }
+        }
+    }
+}
+```
+
