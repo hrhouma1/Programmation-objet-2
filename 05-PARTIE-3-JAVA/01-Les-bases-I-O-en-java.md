@@ -299,7 +299,7 @@ public class WriteAllDemos {
             demo34_WriteAllBytes();           // 3.4
             demo35_UtilitySaveString();       // 3.5
 
-            System.out.println("✅ Terminé. Vérifie le dossier ./data");
+            System.out.println(" Terminé. Vérifie le dossier ./data");
         } catch (IOException e) {
             e.printStackTrace();
         }
