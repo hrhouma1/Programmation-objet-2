@@ -416,3 +416,283 @@ public class WriteAllDemos {
 }
 ```
 
+
+<br/>
+
+
+# Annexe 2
+
+
+
+
+## Résumé pédagogique (avant de voir le code)
+
+* **3.1 Classique (Writer + BufferedWriter)**
+
+  * *Pourquoi* : maîtriser le flux d’écriture **caractère par caractère** avec un **tampon** (buffer) en **UTF-8**.
+  * *Quand* : tu écris **plusieurs lignes petit à petit** (boucles, logs formatés, fusion de contenus).
+  * *Différence* : tu contrôles finement `write()`, `newLine()`, et profites de la **mise en mémoire tampon** pour limiter les accès disque.
+
+* **3.2 Append (ajouter à la fin)**
+
+  * *Pourquoi* : rajouter du texte **sans écraser** l’existant (ex. logs).
+  * *Quand* : fichiers de **journalisation**, rapport qui se **construit** au fil du temps.
+  * *Différence* : la seule différence est **le drapeau `append = true`** à l’ouverture du flux.
+
+* **3.3 NIO (Files.writeString) – recommandé**
+
+  * *Pourquoi* : API moderne, **simple**, sûre, moins de code verbeux.
+  * *Quand* : tu veux **écrire/vite** sans gérer toi-même les Writers et buffers.
+  * *Différence* : on passe par `java.nio.file.Files` (NIO.2), avec **options** (`StandardOpenOption.APPEND`, etc.), **UTF-8** explicite.
+
+* **3.4 Tout le contenu d’un coup (byte\[])**
+
+  * *Pourquoi* : tu as **déjà** une chaîne/byte\[] complète et veux **écrire d’un seul coup**.
+  * *Quand* : génération de **petits** fichiers complets, export ponctuel.
+  * *Différence* : pas de flux haut niveau, **remplacement par défaut** du fichier (overwrite).
+
+* **3.5 Utilitaire (style Apache Commons IO)**
+
+  * *Pourquoi* : **centraliser** l’écriture UTF-8 dans **une méthode** réutilisable pour **raccourcir** tes exemples et éviter les erreurs.
+  * *Quand* : tu veux une **signature simple** `saveStringIntoFile(path, content[, append])`.
+  * *Différence* : on **encapsule** `Files.writeString` (ou `FileUtils.writeStringToFile` si tu ajoutes Apache Commons IO).
+
+---
+
+## Code complet, prêt à compiler/exécuter (avec commentaires exhaustifs)
+
+```java
+// WriteAllDemos.java
+// ============================================================================
+// Objectif pédagogique : montrer 5 façons d'écrire dans des fichiers texte en Java,
+// avec explications claires sur l'utilité, les différences, les implications
+// (tampon/buffer, append, overwrite, encodage, exceptions, API IO vs NIO).
+//
+// Compilation : javac WriteAllDemos.java
+// Exécution   : java WriteAllDemos
+// Sorties     : dossier ./data (créé au lancement)
+//
+// Points clés à retenir :
+// - Toujours préciser l'encodage (UTF-8) pour éviter les caractères "bizarres".
+// - "Append" = on ajoute au fichier existant sans l'écraser.
+// - BufferedWriter = meilleures perfs quand on écrit petit à petit.
+// - NIO (Files.writeString) = API moderne, concise, à privilégier en général.
+// - Overwrite par défaut : re-crée le fichier à chaque écriture (écrase l'ancien).
+// ============================================================================
+
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+
+public class WriteAllDemos {
+
+    public static void main(String[] args) {
+        try {
+            ensureDataDir(); // On s’assure que ./data existe avant toute écriture
+
+            // 3.1 : Recette "classique" avec Writer + BufferedWriter
+            // - Contrôle fin ligne par ligne, tampon mémoire pour réduire les I/O.
+            demo31_ClassicWriterBuffered();
+
+            // 3.2 : Même approche, mais en "append"
+            // - Ajoute en fin de fichier sans supprimer le contenu précédent.
+            demo32_AppendAtEnd();
+
+            // 3.3 : NIO moderne (Files.writeString)
+            // - Concis, lisible, facile à combiner avec des options.
+            demo33_NioWriteString();
+
+            // 3.4 : Écriture "tout d’un coup" à partir d’un byte[]
+            // - Pratique si tu as déjà un bloc complet à écrire.
+            demo34_WriteAllBytes();
+
+            // 3.5 : Utilitaire (style Apache Commons IO)
+            // - Centralise l’écriture UTF-8, très pratique pour tes TP/exemples.
+            demo35_UtilitySaveString();
+
+            System.out.println("OK ✅  — Vérifie le dossier ./data");
+        } catch (IOException e) {
+            // En démo, on affiche simplement la pile. En prod, loggue proprement.
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // Support : création du répertoire de sortie.
+    // ----------------------------------------------------------------------------
+    private static void ensureDataDir() throws IOException {
+        Path dataDir = Path.of("data");
+        // Files.exists : évite l’exception si le dossier est déjà là
+        if (!Files.exists(dataDir)) {
+            Files.createDirectories(dataDir); // Crée aussi les parents si besoin
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // 3.1. Classique (Writer + Buffer)
+    //
+    // Pourquoi :
+    // - Tu veux écrire progressivement (plusieurs écritures successives).
+    // - Tu veux bénéficier d’un "BufferedWriter" pour limiter les accès disque :
+    //   le texte est d’abord mis en mémoire, puis "vidé" (flush/close) en bloc.
+    //
+    // Détails :
+    // - OutputStreamWriter transforme des octets en caractères selon un encodage.
+    // - On force l’UTF-8 (StandardCharsets.UTF_8) pour des accents corrects.
+    // - try-with-resources ferme automatiquement w et bw (flush + close sûrs).
+    // ----------------------------------------------------------------------------
+    private static void demo31_ClassicWriterBuffered() {
+        File file = new File("data/out.txt");
+
+        try (Writer w = new OutputStreamWriter(
+                    new FileOutputStream(file),          // FileOutputStream = flux binaire vers le fichier
+                    StandardCharsets.UTF_8               // encodage explicite pour transformer char -> bytes
+                 );
+             BufferedWriter bw = new BufferedWriter(w)   // tampon pour meilleures perfs sur petites écritures
+        ) {
+            bw.write("Bonjour !");
+            bw.newLine(); // Ajoute le séparateur de ligne adapté au système (portable)
+            bw.write("Deuxième ligne.");
+            // Pas besoin d'appeler bw.flush() : le close() implicite du try s’en charge
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // 3.2. Append (ajouter à la fin)
+    //
+    // Pourquoi :
+    // - Tu construis un fichier "au fil de l’eau" (journalisation, traces d’exécution).
+    // - Tu NE veux PAS écraser le fichier existant.
+    //
+    // Détails :
+    // - Le booléen "true" passé au FileOutputStream active le mode "append".
+    // - Même combo Writer + BufferedWriter pour l’encodage et la perf.
+    // ----------------------------------------------------------------------------
+    private static void demo32_AppendAtEnd() {
+        File file = new File("data/log.txt");
+
+        try (Writer w = new OutputStreamWriter(
+                    new FileOutputStream(file, true),     // append = true  ➜ on ajoute à la fin
+                    StandardCharsets.UTF_8
+                 );
+             BufferedWriter bw = new BufferedWriter(w)
+        ) {
+            bw.write("Nouvelle entrée de log");
+            bw.newLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ----------------------------------------------------------------------------
+    // 3.3. NIO (conseillé)
+    //
+    // Pourquoi :
+    // - API moderne (NIO.2), très lisible, moins de "plomberie".
+    // - Facile d’ajouter des options (APPEND, CREATE, CREATE_NEW, TRUNCATE_EXISTING).
+    //
+    // Détails :
+    // - Files.writeString écrit une chaîne directement dans un Path.
+    // - Par défaut, sans option, si le fichier existe il est remplacé (overwrite).
+    // - Avec APPEND, on ajoute à la fin (équivalent append=true).
+    // ----------------------------------------------------------------------------
+    private static void demo33_NioWriteString() throws IOException {
+        Path p = Path.of("data/out2.txt");
+
+        // Écriture initiale : si out2.txt existe, il sera écrasé.
+        Files.writeString(p, "Texte initial\n", StandardCharsets.UTF_8);
+
+        // Ajout d’une ligne : APPEND pour coller à la fin, sans écraser l’existant.
+        Files.writeString(p, "Ligne ajoutée\n", StandardCharsets.UTF_8, StandardOpenOption.APPEND);
+    }
+
+    // ----------------------------------------------------------------------------
+    // 3.4. Tout le contenu d’un coup (byte[])
+    //
+    // Pourquoi :
+    // - Tu as déjà tout le contenu en mémoire (String/byte[]) et tu veux "dump" en une fois.
+    // - Parfait pour des petits fichiers générés d’un coup (ex: export court, modèle fixe).
+    //
+    // Détails :
+    // - Files.write(Path, byte[]) écrit le tableau tel quel (aucun Writer ici).
+    // - Par défaut, si le fichier existe, il est écrasé (overwrite).
+    // - Encodage : on décide nous-même en convertissant String -> byte[] en UTF-8.
+    // ----------------------------------------------------------------------------
+    private static void demo34_WriteAllBytes() throws IOException {
+        Path p = Path.of("data/out3.txt");
+        byte[] content = "Contenu complet\n".getBytes(StandardCharsets.UTF_8);
+        Files.write(p, content); // overwrite par défaut ; utiliser APPEND si besoin
+    }
+
+    // ----------------------------------------------------------------------------
+    // 3.5. Utilitaire fourni (style Apache Commons IO)
+    //
+    // Pourquoi :
+    // - Tu répètes sans cesse la même écriture UTF-8 → on factorise dans une méthode.
+    // - Tes TP/échantillons restent lisibles : une ligne pour écrire, c’est tout.
+    //
+    // Détails :
+    // - Ici, FileWriterUtil encapsule Files.writeString (standard Java).
+    // - Si tu ajoutes Apache Commons IO, tu peux remplacer l’implémentation par
+    //   FileUtils.writeStringToFile(new File(path), content, UTF_8, append).
+    // ----------------------------------------------------------------------------
+    private static void demo35_UtilitySaveString() {
+        try {
+            // Écriture simple (overwrite)
+            FileWriterUtil.saveStringIntoFile("data/out_util.txt", "Hello depuis l’utilitaire (UTF-8)\n");
+
+            // Écriture en append (ajout en fin)
+            FileWriterUtil.saveStringIntoFile("data/out_util.txt", "Deuxième ligne via utilitaire\n", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ============================================================================
+    // Petit utilitaire réutilisable dans tes projets/TP
+    // - Avantage : centraliser l’encodage, le choix "append vs overwrite", et
+    //   homogénéiser ta façon d’écrire (évite l’oubli d’UTF-8 quelque part).
+    // - Choix techniques :
+    //   * overwrite = Files.writeString(path, content, UTF_8)  (écrase)
+    //   * append    = Files.writeString(path, content, UTF_8, APPEND) (ajoute)
+    //     - Note : si le fichier n’existe pas et que tu passes APPEND, Java le
+    //       crée automatiquement avec CREATE (comportement fusionné par Files).
+    // ============================================================================
+    static class FileWriterUtil {
+        public static void saveStringIntoFile(String path, String content) throws IOException {
+            Files.writeString(Path.of(path), content, StandardCharsets.UTF_8);
+        }
+        public static void saveStringIntoFile(String path, String content, boolean append) throws IOException {
+            Path p = Path.of(path);
+            if (append) {
+                Files.writeString(p, content, StandardCharsets.UTF_8,
+                        // APPEND = ajoute ; CREATE = crée si manquant (sécurise l’appel)
+                        StandardOpenOption.CREATE, StandardOpenOption.APPEND
+                );
+            } else {
+                Files.writeString(p, content, StandardCharsets.UTF_8);
+            }
+        }
+    }
+}
+```
+
+
+
+## En bref : quelle méthode choisir ?
+
+* **Tu écris ligne par ligne en boucle** → **3.1 Classique (BufferedWriter)**
+* **Tu fais de la journalisation** (ne jamais écraser) → **3.2 Append** ou **3.3 NIO + APPEND**
+* **Tu veux du code concis et moderne** → **3.3 NIO (Files.writeString)**
+* **Tu as déjà tout le contenu d’un coup** → **3.4 byte\[] (Files.write)**
+* **Tu veux simplifier tous tes exemples** → **3.5 Utilitaire** (encapsule UTF-8 + append)
+
