@@ -343,3 +343,104 @@ classDiagram
 * **LSP** : une sous-classe ne casse jamais le contrat.
 * **DIP** : haut niveau → **abstractions**, pas détails.
 
+
+# ANNEXE - VULGARISATION DE DIP 
+
+
+
+
+### 1. Sans inversion de dépendance (rigide)
+
+Imagine que tu veux **prévenir ton ami**.
+Tu dis :
+
+> "Je vais l’appeler **seulement avec un téléphone**."
+
+Ton code ressemblerait à ça :
+
+```java
+class Telephone {
+    public void appeler(String message) {
+        System.out.println("Appel : " + message);
+    }
+}
+
+class Ami {
+    private Telephone telephone = new Telephone(); // dépendance forte
+
+    public void prevenir(String msg) {
+        telephone.appeler(msg);
+    }
+}
+```
+
+👉 Problème : si ton ami **n’a plus de téléphone mais seulement WhatsApp**, tu dois **réécrire ton code**.
+
+
+
+### 2. Avec inversion de dépendance (souple)
+
+Au lieu de dire **"j’utilise un téléphone"**, tu dis :
+
+> "J’utilise un **moyen de communication**, peu importe lequel."
+
+Donc tu fais une **règle générale** (interface), et tu branches ce que tu veux dessus.
+
+```java
+// Contrat = je peux communiquer
+interface MoyenCommunication {
+    void envoyer(String message);
+}
+
+// Téléphone
+class Telephone implements MoyenCommunication {
+    public void envoyer(String message) {
+        System.out.println("Appel : " + message);
+    }
+}
+
+// WhatsApp
+class WhatsApp implements MoyenCommunication {
+    public void envoyer(String message) {
+        System.out.println("WhatsApp : " + message);
+    }
+}
+
+// Ami dépend seulement de "MoyenCommunication"
+class Ami {
+    private MoyenCommunication moyen;
+
+    public Ami(MoyenCommunication moyen) {
+        this.moyen = moyen;
+    }
+
+    public void prevenir(String msg) {
+        moyen.envoyer(msg);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Ami ami1 = new Ami(new Telephone());
+        ami1.prevenir("Je viens te voir !");
+
+        Ami ami2 = new Ami(new WhatsApp());
+        ami2.prevenir("On se parle sur WhatsApp !");
+    }
+}
+```
+
+
+
+### 3. L’image 
+
+* **Sans inversion** : tu dis "je vais **toujours** utiliser une **voiture** pour aller à l’école".
+  → Si ta voiture tombe en panne, tu es bloqué.
+
+* **Avec inversion** : tu dis "je vais utiliser un **moyen de transport**".
+  → Ça peut être une voiture, un vélo, un bus, peu importe.
+
+👉 Tu dépends d’une **idée générale** (abstraction), pas d’un détail (voiture précise).
+
+
+
