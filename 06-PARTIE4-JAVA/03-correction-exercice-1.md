@@ -1,54 +1,73 @@
-# Correction complète — Couplage fort → Injection via interface (DI)
+# 1) Problème identifié
+
+Dans la version initiale, la classe `UserService` crée directement une instance de `MySQLDatabase` :
+
+```java
+private MySQLDatabase db = new MySQLDatabase();
+```
+
+Cela introduit un **couplage fort** :
+
+* **Testabilité réduite** : on ne peut pas substituer une fausse base de données pour les tests.
+* **Extensibilité limitée** : changer de type de base nécessite de modifier `UserService`.
+* **Violation du principe D de SOLID** (*Dependency Inversion*) : un module de haut niveau (`UserService`) dépend d’un module de bas niveau (`MySQLDatabase`) au lieu de dépendre d’une abstraction.
 
 
 
-## 1) Problème identifié
+# 2) Objectif demandé
 
-Dans le code initial `UserService` instancie directement `MySQLDatabase` (`new MySQLDatabase()`), ce qui crée un **couplage fort** entre `UserService` et l'implémentation concrète.
-Résultats indésirables :
-
-* difficile à tester (impossible de substituer un double de test),
-* peu d'extensibilité (changer de base implique modifier la classe),
-* violation du principe **D** de SOLID — *Dependency Inversion Principle* (les modules de haut niveau ne doivent pas dépendre des modules de bas niveau ; les deux doivent dépendre d'abstractions).
+* Introduire une **abstraction** `Database` (interface).
+* Adapter `MySQLDatabase` pour implémenter cette interface.
+* **Injecter** une implémentation de `Database` dans `UserService` via son **constructeur** (constructor injection).
+* Déplacer la logique de lancement dans une classe `App` pour séparer responsabilité métier et exécution.
 
 
 
-## 2) Objectif demandé
-
-Créer une `interface Database`, conserver/adapter `MySQLDatabase` pour implémenter cette interface, et **injecter** `Database` dans `UserService` via le **constructeur** (constructor injection).
-
-
-
-## 3) Arborescence (ASCII)
+# 3) Nouvelle arborescence du projet (ASCII)
 
 ```
 project-root/
-├─ src/
-│  ├─ Database.java
-│  ├─ MySQLDatabase.java
-│  ├─ InMemoryDatabase.java        # impl. de test / exemple
-│  └─ UserService.java
-└─ tests/
-   └─ UserServiceTest.java         # test manuel simple (sans framework)
-```
-
----
-
-## 4) Diagramme de dépendance (ASCII)
-
-```
-UserService  <-- depends on --  Database (interface)
-      ^
-      |                          implementations
-      |---- constructed-with ----> MySQLDatabase (implements Database)
-      |---- constructed-with ----> InMemoryDatabase (implements Database)
+└─ src/
+   ├─ Database.java           # interface commune
+   ├─ MySQLDatabase.java      # implémentation concrète MySQL
+   ├─ InMemoryDatabase.java   # implémentation alternative pour démo / cours
+   ├─ UserService.java        # logique métier, dépend d'une abstraction
+   └─ App.java                # point d’entrée de l’application
 ```
 
 
 
-## 5) Code corrigé (constructeur + interface)
+# 4) Diagramme des dépendances (ASCII)
 
-### `Database.java`
+```
+                  +------------------+
+                  |   Database (I)   |<----------------------+
+                  +------------------+                       |
+                          ^                                   |
+                          |                                   |
+           +--------------+---------------+                   |
+           |                              |                   |
++-----------------------+     +-----------------------+       |
+| MySQLDatabase (impl.) |     | InMemoryDatabase (impl)|       |
++-----------------------+     +-----------------------+       |
+                                                               |
+                             +--------------------+            |
+                             |    UserService     |------------+
+                             +--------------------+
+                                      ^
+                                      |
+                                      |  Injected at runtime
+                                      |
+                             +--------------------+
+                             |       App          |
+                             +--------------------+
+```
+
+
+
+# 5) Code final
+
+### `Database.java` — l’abstraction
 
 ```java
 public interface Database {
@@ -56,19 +75,19 @@ public interface Database {
 }
 ```
 
-### `MySQLDatabase.java`
+### `MySQLDatabase.java` — implémentation concrète
 
 ```java
 public class MySQLDatabase implements Database {
     @Override
     public void save(String data) {
-        // Ici on simule un accès réel ; en production on mettra JDBC/ORM
+        // Simulation d’une insertion en base réelle
         System.out.println("MySQL: " + data);
     }
 }
 ```
 
-### `InMemoryDatabase.java` (utilitaire pour tests / démonstration)
+### `InMemoryDatabase.java` — implémentation alternative (utile pour la démo)
 
 ```java
 import java.util.ArrayList;
@@ -83,20 +102,20 @@ public class InMemoryDatabase implements Database {
         System.out.println("InMemoryDB saved: " + data);
     }
 
-    // helper pour assertions dans les tests simples
+    // Méthode utilitaire pour consulter l’état interne
     public List<String> getStorage() {
         return storage;
     }
 }
 ```
 
-### `UserService.java` (injection par constructeur)
+### `UserService.java` — logique métier découplée
 
 ```java
 public class UserService {
-    private final Database db; // dépend d'une abstraction
+    private final Database db; // dépend de l’abstraction, pas d’une classe concrète
 
-    // Constructor Injection
+    // Injection via le constructeur (obligatoire et sûr)
     public UserService(Database db) {
         if (db == null) {
             throw new IllegalArgumentException("Database ne peut pas être null");
@@ -105,142 +124,108 @@ public class UserService {
     }
 
     public void register(String user) {
-        // ici on pourrait ajouter validation, hashing, etc. (SRP à respecter)
+        // Ici on pourrait valider / transformer l’utilisateur
         db.save(user);
-    }
-
-    // Demo main - montre comment injecter une implémentation
-    public static void main(String[] args) {
-        Database mysql = new MySQLDatabase();
-        UserService service = new UserService(mysql);
-        service.register("alice");
-
-        // Exemple avec InMemory pour démonstration
-        InMemoryDatabase mem = new InMemoryDatabase();
-        UserService testService = new UserService(mem);
-        testService.register("bob");
-        System.out.println("InMemory storage: " + mem.getStorage());
     }
 }
 ```
 
-
-
-## 6) Explications détaillées (exhaustif)
-
-### a) Pourquoi l'interface ?
-
-* Permet de **découpler** l'utilisation (UserService) de l'implémentation.
-* Autorise l'ajout d'autres implémentations (`PostgresDatabase`, `MockDatabase`, `FileDatabase`, etc.) **sans modifier** `UserService`.
-* Facilite les tests unitaires : on injecte un double (mock/stub) qui enregistre les appels.
-
-### b) Pourquoi constructeur ?
-
-* **Constructor injection** garantit que la dépendance est fournie au moment de la création de l'objet (objet immuable côté dépendances).
-* Permet d'avoir un `final` field, évite `null` plus tard.
-* Meilleur pour l'injection obligatoire (la classe ne peut fonctionner sans la dépendance).
-
-### c) Alternatives — quand les utiliser
-
-* **Setter injection** (méthode `setDatabase(Database db)`):
-
-  * utile si la dépendance est optionnelle ou pour frameworks qui nécessitent un setter.
-  * moins sûr (risque d'oublier d'appeler le setter → NPE).
-* **Interface + Factory / Provider**:
-
-  * si création de l'implémentation est complexe, utiliser un `DatabaseFactory` ou DI container.
-* **DI frameworks** (Spring, Guice) :
-
-  * dans des projets réels on laisserait le framework gérer l'injection.
-
-### d) Single Responsibility Principle (SRP)
-
-* `UserService` devrait se limiter à la logique métier utilisateur (validation, règles).
-* Si la logique de persistence devient complexe, extraire `UserRepository` qui implémente `Database` ou appelle `Database`.
-* Exemple de séparation :
-
-  * `UserService` : valider utilisateur, appliquer règles métier.
-  * `UserRepository` : persist et récupération des objets `User`.
-
-### e) Testabilité
-
-* En injectant `InMemoryDatabase` (ou un mock), on peut vérifier que `register` appelle `save` et tester le comportement métier sans accéder à une vraie DB.
-
-
-
-## 7) Test manuel simple (sans Mockito) — `tests/UserServiceTest.java`
+### `App.java` — point d’entrée unique
 
 ```java
-public class UserServiceTest {
-    public static void main(String[] args) {
-        InMemoryDatabase mem = new InMemoryDatabase();
-        UserService service = new UserService(mem);
-        service.register("charlie");
+public class App {
 
-        if (mem.getStorage().contains("charlie")) {
-            System.out.println("TEST PASSED");
-        } else {
-            System.out.println("TEST FAILED");
+    /**
+     * Point d’entrée de l’application.
+     * Usage :
+     *   java App               -> par défaut MySQLDatabase, enregistre "alice"
+     *   java App memory bob    -> InMemoryDatabase, enregistre "bob"
+     *   java App mysql  charly -> MySQLDatabase, enregistre "charly"
+     */
+    public static void main(String[] args) {
+        // Choix du backend en fonction des arguments
+        String backend = (args.length > 0) ? args[0].toLowerCase() : "mysql";
+        String user    = (args.length > 1) ? args[1] : "alice";
+
+        Database db;
+        switch (backend) {
+            case "memory":
+                db = new InMemoryDatabase();
+                break;
+            case "mysql":
+            default:
+                db = new MySQLDatabase();
+                break;
+        }
+
+        // Injection de l’implémentation choisie dans UserService
+        UserService service = new UserService(db);
+        service.register(user);
+
+        // Affichage spécial si on utilise InMemoryDatabase
+        if (db instanceof InMemoryDatabase) {
+            System.out.println("État interne InMemory: " + ((InMemoryDatabase) db).getStorage());
         }
     }
 }
 ```
 
-> Pour des tests unitaires professionnels, utilisez JUnit + Mockito (mocks / verify).
-
-<br/>
-
-# Annexe 
 
 
-## 8) Variantes utiles (exemples courts)
+# 6) Explications détaillées (exhaustif)
 
-### Setter injection (moins recommandé si la dépendance est obligatoire)
+### a) Pourquoi l’interface `Database` ?
 
-```java
-public class UserService {
-    private Database db;
+* Elle **découple** `UserService` du type concret.
+* Elle permet d’ajouter facilement de nouvelles implémentations (PostgreSQL, fichier, API REST) sans toucher au code métier.
+* Elle favorise la **substitution** et la réutilisation (principe Liskov + DIP).
 
-    public void setDatabase(Database db) { this.db = db; }
+### b) Pourquoi l’injection par constructeur ?
 
-    public void register(String user) {
-        if (db == null) throw new IllegalStateException("Database non initialisée");
-        db.save(user);
-    }
-}
-```
+* Garantit que l’objet `UserService` est **valide** dès sa création.
+* Évite l’état mutable ou l’oubli d’un setter.
+* Facilite l’injection par un framework DI (Spring, Guice) plus tard.
 
-### Factory pattern (si création compliquée)
+### c) Pourquoi un `App.java` séparé ?
 
-```java
-public class DatabaseFactory {
-    public static Database create(String type) {
-        if ("mysql".equalsIgnoreCase(type)) return new MySQLDatabase();
-        if ("memory".equalsIgnoreCase(type)) return new InMemoryDatabase();
-        throw new IllegalArgumentException("Type inconnu");
-    }
-}
-```
+* **Séparation des responsabilités** : `UserService` gère la logique métier, `App` gère la configuration et le choix d’implémentation.
+* Permet de changer le “mode” d’exécution (prod, test, démo) sans toucher au code métier.
+* Permet d’avoir un point d’entrée clair pour `java App`.
 
+### d) Avantages obtenus
 
+* Respect du principe **D** de SOLID (Dependency Inversion).
+* **Testabilité** : injection d’une base mémoire pour vérifier le comportement.
+* **Extensibilité** : remplacement transparent de la couche persistance.
+* **Lisibilité** : code métier plus simple, moins de dépendances cachées.
 
-## 9) Check-list de qualité à appliquer au code final
+### e) Alternatives possibles
 
-* [x] `UserService` dépend d'une abstraction (`Database`).
-* [x] Injection via constructeur (dépendance final).
-* [x] Implémentation concrète `MySQLDatabase` inchangée en logique externe.
-* [x] Exemples de test avec `InMemoryDatabase`.
-* [x] Validation null/erreurs au constructeur.
-* [x] Respect partiel des principes SOLID : DIP amélioré ; SRP à surveiller (séparer logique métier vs persistence si nécessaire).
+* **Setter injection** si la dépendance est optionnelle.
+* **Factory** ou **Provider** si la création est complexe.
+* **Framework DI** (Spring/Guice) pour configurer l’injection via annotations.
 
 
 
-## 10) Bonnes pratiques / suggestions d'amélioration progressive
+# 7) Checklist qualité
 
-1. Extraire `UserRepository` si `UserService` commence à contenir logique de stockage.
-2. Ajouter des interfaces typesafe (e.g., `Repository<T>` générique).
-3. Utiliser des DTO / objets `User` au lieu de `String user`.
-4. Pour production : remplacer `System.out.println` par un logger et implémenter vraie couche persistante (JDBC / JPA).
-5. Ajouter des tests unitaires avec JUnit + Mockito pour `verify(db).save(...)`.
+* [x] `UserService` ne dépend que de `Database`.
+* [x] Implémentations interchangeables (`MySQLDatabase` / `InMemoryDatabase`).
+* [x] Injection par constructeur, champ `final`.
+* [x] Point d’entrée `App` qui illustre l’usage réel.
+* [x] Séparation nette responsabilité métier / exécution.
 
 
+
+# 8) Étapes suivantes possibles (améliorations)
+
+1. Introduire un objet `User` au lieu d’un `String` pour plus de cohérence SRP.
+2. Ajouter un `UserRepository` si la logique de persistence s’étend.
+3. Remplacer `System.out.println` par un vrai logger (SLF4J/Logback).
+4. Intégrer des tests unitaires avec JUnit + Mockito (mock de `Database`).
+5. Mettre en place un conteneur DI pour la configuration automatique.
+
+
+
+> Avec cette structure, l’exemple est **parfaitement aligné avec SOLID**.
+> `App.java` est le seul endroit où tu choisis l’implémentation de `Database` à injecter dans `UserService`.
