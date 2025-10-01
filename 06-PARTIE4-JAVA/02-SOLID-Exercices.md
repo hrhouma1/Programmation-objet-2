@@ -191,9 +191,11 @@ C:.
         UserService.java
 
 ```
----
 
-## Exercice 2 — SRP (trop de responsabilités)
+
+-------
+# Exercice 2 — SRP (trop de responsabilités)
+-------
 
 **Mauvaise pratique (à découper en 3 classes)**
 
@@ -213,6 +215,94 @@ class Report {
 ```
 
 **À faire :** créer `ReportGenerator`, `ReportSaver`, `ReportSender`. La méthode `main` orchestre les trois.
+
+
+
+-------
+# Correction Exercice 2 — SRP (trop de responsabilités)
+-------
+
+
+
+```java
+├───.vscode
+├───bin
+├───lib
+└───src
+        App.java
+        ReportGenerator.java
+        ReportSaver.java
+        ReportSender.java
+```
+
+
+
+
+## Nouvelle classe ReportSender
+
+
+```java
+public class ReportSender {
+
+        void sendByEmail() { System.out.println("email"); }
+
+    
+}
+
+
+```
+
+
+
+## Nouvelle classe ReportSaver
+
+```java
+public class ReportSaver {
+
+        void saveToFile() { System.out.println("save"); }
+
+    
+}
+
+```
+
+## Nouvelle classe ReportGenerator
+
+```java
+public class ReportGenerator {
+    
+
+    void generate() { System.out.println("gen"); }
+}
+
+```
+
+
+## Orchestrez le tous dans main dans App.java
+
+```java
+public class App {
+    public static void main(String[] args) throws Exception {
+       
+ReportGenerator r1 = new ReportGenerator();
+ReportSaver r2 = new ReportSaver();
+ReportSender r3 = new ReportSender();
+
+
+        r1.generate();
+        r2.saveToFile();
+        r3.sendByEmail();
+    }
+
+   
+}
+
+```
+
+
+
+
+
 
 ---
 
