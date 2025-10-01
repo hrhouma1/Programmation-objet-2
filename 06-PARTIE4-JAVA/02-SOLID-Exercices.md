@@ -27,6 +27,121 @@ class UserService {
 4. injecter `Database` via le constructeur de `UserService`.
 5. Créer la classe principale App.java pour tester la nouvelle classe `UserService` qui présente un couplage moins fort.
 
+
+
+
+
+## Correction Exercice 1 — Version simple
+
+##  Étape 1 - Création de l'interface Database
+
+```java
+public interface Database {
+    void save(String data);
+}
+```
+
+##  Étape 2 - Création de deux implémentations concrêtes de l'interface Database
+
+#### Implémentation 1 - MySQLDatabase (Étape 2)
+
+```java
+public class MySQLDatabase implements Database {
+
+   @Override
+    public void save(String data) {
+        // Simulation d’une insertion en base réelle
+        System.out.println("MySQL: " + data);
+    }
+    
+}
+```
+
+#### Implémentation 2 - InMemoryDatabase (Étape 3)
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class InMemoryDatabase implements Database{
+
+  private final List<String> storage = new ArrayList<>();
+
+    @Override
+    public void save(String data) {
+        storage.add(data);
+        System.out.println("InMemoryDB saved: " + data);
+    }
+
+    // Méthode utilitaire pour consulter l’état interne
+    public List<String> getStorage() {
+        return storage;
+    }
+    
+}
+
+```
+
+
+## Étape 4  - injecter `Database` via le constructeur de `UserService`.
+
+```java
+public class UserService {
+    private final Database db; // dépend de l’abstraction, pas d’une classe concrète
+
+    // Injection via le constructeur (obligatoire et sûr)
+    public UserService(Database db) {
+        if (db == null) {
+            throw new IllegalArgumentException("Database ne peut pas être null");
+        }
+        this.db = db;
+    }
+
+    public void register(String user) {
+        // Ici on pourrait valider / transformer l’utilisateur
+        db.save(user);
+    }
+}
+
+
+```
+
+
+## Étape 5 - Créer la classe principale App.java pour tester la nouvelle classe `UserService` qui présente un couplage moins fort.
+
+```java
+public class App {
+    public static void main(String[] args) throws Exception {
+        
+        String user1    = "Alice";
+
+        InMemoryDatabase db1 = new InMemoryDatabase();
+        MySQLDatabase db2 = new MySQLDatabase();
+
+        UserService service = new UserService(db2);
+        service.register(user1); 
+
+    }
+}
+
+```
+
+
+## Exécutez le code !!!!
+
+```java
+C:.
+├───.vscode
+├───bin
+├───lib
+└───src
+        App.java
+        Database.java
+        InMemoryDatabase.java
+        MySQLDatabase.java
+        UserService.java
+
+```
 ---
 
 ## Exercice 2 — SRP (trop de responsabilités)
