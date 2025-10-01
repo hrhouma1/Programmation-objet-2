@@ -33,6 +33,53 @@ class UserService {
 
 ## Correction Exercice 1 — Version simple
 
+
+
+
+### Diagramme des dépendances 
+
+```
+                  +------------------+
+                  |   Database (I)   |<----------------------+
+                  +------------------+                       |
+                          ^                                   |
+                          |                                   |
+           +--------------+---------------+                   |
+           |                              |                   |
++-----------------------+     +-----------------------+       |
+| MySQLDatabase (impl.) |     | InMemoryDatabase (impl)|       |
++-----------------------+     +-----------------------+       |
+                                                               |
+                             +--------------------+            |
+                             |    UserService     |------------+
+                             +--------------------+
+                                      ^
+                                      |
+                                      |  Injected at runtime
+                                      |
+                             +--------------------+
+                             |       App          |
+                             +--------------------+
+```
+
+
+## Arboresance du projet VScode 
+
+```java
+C:.
+├───.vscode
+├───bin
+├───lib
+└───src
+        App.java
+        Database.java
+        InMemoryDatabase.java
+        MySQLDatabase.java
+        UserService.java
+
+```
+
+
 ##  Étape 1 - Création de l'interface Database
 
 ```java
