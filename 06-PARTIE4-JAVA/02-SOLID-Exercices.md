@@ -1,4 +1,6 @@
-## Exercice 1 — Couplage fort
+-------
+# Exercice 1 — Couplage fort
+-------
 
 **Mauvaise pratique (à corriger vers interface + injection)**
 
