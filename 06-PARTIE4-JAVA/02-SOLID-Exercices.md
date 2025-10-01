@@ -20,7 +20,12 @@ class UserService {
 }
 ```
 
-**À faire :** créer `interface Database`, implémentation `MySQLDatabase`, puis injecter `Database` via le constructeur de `UserService`.
+**À faire :** 
+- 1. créer `interface Database`
+- 2. implémentation `MySQLDatabase` classe concrête de l'interface `interface Database`.
+  3. implémentation d'une autre classe concrête, par exemple, `InMemoryDatabase` , deuxième classe concrête de l'interface `interface Database`.
+- 3. injecter `Database` via le constructeur de `UserService`.
+- 4. Créer la classe principale App.java pour tester la nouvelle classe `UserService` qui présente un couplage moins fort.
 
 ---
 
