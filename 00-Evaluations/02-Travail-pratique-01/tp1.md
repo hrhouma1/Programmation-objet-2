@@ -160,13 +160,6 @@ public class App {
 
 
 
-
-
-
-
-
-
-
 ## Exercice 3
 
 **Mauvaise pratique (à corriger vers composition + interface + injection)**
@@ -253,19 +246,18 @@ class App3Bad {
 * Explications entre 4 et 10 lignes : diagnostic synthétique, choix de l’abstraction, et rappel **DIP vs héritage**.
 
 
-
-
 <br/>
 <br/>
 
 
 
-## Exercice 3 — SRP (trop de responsabilités) — **Lecture/Écriture réelles**
 
+# Exercice 4 — **SRP** (Single Responsibility Principle) : Lecture/Écriture réelles
 
-- Expliquez c'est quoi le SRP ?
-  
-**Mauvaise pratique (à découper en 2 classes : lecteur vs écrivain)**
+**But (2–3 lignes)**
+Appliquer **SRP** en **séparant** lecture et écriture : **une classe = une responsabilité**.
+
+**Mauvaise pratique de départ (fourre-tout)**
 
 ```java
 class Report {
@@ -274,31 +266,79 @@ class Report {
 }
 ```
 
-**À faire :**
+**À faire**
 
-* Remplacer la classe « fourre-tout » par **deux classes distinctes** :
+* Créer **`ReportReader`** : lit `data/input.txt` (UTF-8) et **retourne** une chaîne.
+* Créer **`ReportWriter`** : écrit une chaîne vers `out/report.txt` (UTF-8), **(ré)écrit** le fichier, crée `out/` si besoin.
+* **Point d’entrée** : `class App` **orchestre uniquement** la séquence **Lecture → Écriture**.
+* Vous pouvez garder une **façade `Report`** qui délègue aux deux classes (optionnel), mais **aucune I/O ne doit rester dans `Report`** si vous l’utilisez.
 
-  * `ReportReader` : **lit** un fichier d’entrée (ex. `data/input.txt`, UTF-8) et **retourne** une chaîne.
-  * `ReportWriter` : **écrit** une chaîne dans un fichier de sortie (ex. `out/report.txt`, UTF-8 ; crée le dossier si nécessaire).
-* La méthode `main` **orchestre uniquement** : **Lecture → Écriture** (pas d’autre responsabilité).
-* Interdits : fusionner lecture/écriture dans une seule classe ; remplacer l’I/O par des `System.out.println`.
-* Exigences minimales I/O :
+**Exigences I/O**
 
-  * Entrée : `data/input.txt` (au moins 3 lignes non vides).
-  * Sortie : `out/report.txt` **créé/réécrit** à l’exécution.
-* Justifier brièvement **SRP** (une classe = une raison de changer) dans un fichier .txt (5–10 lignes).
+* Entrée : `data/input.txt` contient **au moins 3 lignes non vides**.
+* Sortie : `out/report.txt` est **créé/réécrit** à l’exécution.
+* Pas de `println` à la place de vraies I/O.
 
-**Point d’entrée imposé :**
+**Livrables**
 
-```java
-class App {
-    public static void main(String[] args) {
-        Report r = new Report();
-        r.readFromFileTxt();   // doit lire un vrai fichier (pas un print)
-        r.writeInFileTxt();    // doit écrire un vrai fichier (pas un print)
-    }
-}
-```
+* Extraits de code (Reader/Writer, éventuellement la façade `Report`, `App`) ;
+* Captures (arborescence, compilation/exécution, fichiers ouverts) ;
+* **Justification SRP (5–10 lignes)** : « une classe = une raison de changer ».
 
-> Remarque : le code ci-dessus est uniquement le **gabarit d’appel** exigé pour l’énoncé.
-> Vous devez concevoir les classes finales (`ReportReader`, `ReportWriter`, etc.) et **adapter** `Report`/`App` en conséquence, tout en respectant **SRP** et les contraintes I/O.
+
+
+## Grille rapide d’auto-contrôle (checklist)
+
+* [ ] **Un seul DOCX** nommé correctement
+* [ ] **`App`** est le **point d’entrée** (sauf gabarit imposé, adapté en façade si nécessaire)
+* [ ] **Pas de new d’implémentation** dans les services (DIP respecté)
+* [ ] **I/O réelles** en UTF-8 quand exigées ; `out/` créé si besoin
+* [ ] **Captures complètes** (compilation, exécution, arborescence, fichiers ouverts)
+* [ ] **Justifications SOLID** claires (5–10 lignes/exercice)
+* [ ] **Nom des classes cohérent** (`MySqlDatabase`, `Logger`, etc.)
+* [ ] **Chemins encapsulés** dans les implémentations, pas dans les services
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
