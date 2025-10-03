@@ -13,9 +13,10 @@
   5. **Justification(s)** demandées (SOLID, couplage, etc.) en 5–10 lignes
 * Aucune bibliothèque externe. Java 17+ uniquement.
 
+<br/>
+<br/>
 
-
-## Exercice 1 — Couplage fort
+# Exercice 1 — Couplage fort
 
 **Mauvaise pratique (à corriger vers interface + injection)**
 
