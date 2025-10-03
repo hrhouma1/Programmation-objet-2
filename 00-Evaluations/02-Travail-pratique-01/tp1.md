@@ -13,6 +13,13 @@
   5. **Justification(s)** demandées (SOLID, couplage, etc.) en 5–10 lignes
 * Aucune bibliothèque externe. Java 17+ uniquement.
 
+
+
+> *Les **exercices 1 à 3 sont obligatoires**. L’**exercice 4 est un exercice bonus** (optionnel, sans pénalité).*
+
+
+
+
 <br/>
 <br/>
 
@@ -252,7 +259,7 @@ class App3Bad {
 
 
 
-# Exercice 4 — **SRP** (Single Responsibility Principle) : Lecture/Écriture réelles
+# Exercice 4 — **SRP** (Single Responsibility Principle) : Lecture/Écriture réelles (EXERCICE BONUS)
 
 **But (2–3 lignes)**
 Appliquer **SRP** en **séparant** lecture et écriture : **une classe = une responsabilité**.
