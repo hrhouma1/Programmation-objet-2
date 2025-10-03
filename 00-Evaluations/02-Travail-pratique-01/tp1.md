@@ -51,13 +51,19 @@ Justifier brièvement **DIP** et **couplage faible** dans le rapport (5–10 lig
 
 
 
-## Exercice 2 — Diagnostic de conception 
 
-**Instructions :**
 
-1. Lisez et exécutez le code ci-dessous tel quel.
-2. **Identifiez précisément les problèmes de conception** (nommez les principe(s) SOLID non respectée.s, la nature du couplage, et les conséquences possibles).
-3. Proposez un nouveau code.
+
+
+# Exercice 2 — Diagnostic de conception 
+
+## But (2–3 lignes)
+
+Diagnostiquer des **violations SOLID** et proposer une **refactorisation minimale**. L’objectif est d’identifier précisément les problèmes (DIP, couplage au détail, etc.) puis de proposer un **code corrigé succinct**.
+
+## Code fourni (à diagnostiquer)
+
+> **Exécutez ce code tel quel**, puis faites le diagnostic demandé.
 
 ```java
 import java.nio.file.*;
@@ -89,7 +95,6 @@ class FileLogger {
 }
 ```
 
-
 ```java
 // Service métier qui hérite d'un logger de fichiers
 class AuditService extends FileLogger {
@@ -103,7 +108,7 @@ class AuditService extends FileLogger {
 ```
 
 ```java
-public class App{
+public class App {
     public static void main(String[] args) {
         AuditService svc = new AuditService();
         svc.audit("USER_LOGIN");
@@ -117,18 +122,33 @@ public class App{
 }
 ```
 
-### À remettre (diagnostic + nouveau code)
+## Ce que vous devez faire
 
-* Une réponse courte (5–10 lignes) qui :
+1. **Exécuter tel quel** et joindre des **captures** :
 
-  * nomme le(s) principe(s) SOLID non respecté(s),
-  * qualifie le type de couplage en cause,
-  * explique les impacts
- 
-* Proposez le nouveau code
+   * Compilation **et** exécution,
+   * Arborescence (`data/`, `out/`, `src/`),
+   * Fichier `out/audit.log` **ouvert** dans l’éditeur (si généré).
 
+2. **Rédiger un diagnostic (5–10 lignes)** :
 
+   * Nommer les **principes SOLID non respectés** (ex. DIP, éventuellement LSP si argumenté),
+   * Qualifier le **type de couplage** (fort au détail concret : héritage utilitaire + chemin de fichier dans le service),
+   * Expliquer les **impacts** (testabilité, substitution, extension à d’autres backends de log, etc.).
 
+3. **Proposer un code corrigé minimal** (extraits) :
+
+   * Introduire une **abstraction** (ex. `interface Logger { void log(String message); }`),
+   * Fournir au moins **une implémentation** (ex. fichier UTF-8 qui encapsule le chemin) et/ou une console,
+   * Faire dépendre `AuditService` de **l’abstraction** (composition + injection par constructeur),
+   * **Sans** `extends FileLogger`, **sans** `new` d’implémentation **à l’intérieur** de `AuditService`.
+
+## Livrables (dans le DOCX)
+
+* Diagnostic (5–10 lignes) clair et structuré,
+* Extraits **avant / après** (suffisants pour montrer la correction),
+* Captures d’écran (compilation + exécution + arborescence + fichier/logs),
+* Brève justification des **choix de conception** (DIP, couplage faible, ...).
 
 
 
