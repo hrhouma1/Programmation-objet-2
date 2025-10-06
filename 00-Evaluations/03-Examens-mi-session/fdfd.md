@@ -4,6 +4,7 @@
 - **Durée :** 1 h 15
 - **À remettre :** un dossier `src/` compilable + un document Word ou .txt décrivant vos réponses et vos captures d’écran.
 
+<br/>
 
 # **Partie 1 – Classe de base (10 points)**
 
@@ -103,7 +104,7 @@ Utilisation d’un smartphone moderne
 ...........................................................
 ```
 
-
+<br/>
 
 # **Partie 3 – Classes abstraites (20 points)**
 
@@ -165,7 +166,7 @@ Vitesse : 100.0 km/h
 ...........................................................
 ```
 
-
+<br/>
 
 # **Partie 4 – Encapsulation (15 points)**
 
