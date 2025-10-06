@@ -1,13 +1,13 @@
 # **Examen 1 – Programmation Orientée Objet en Java**
 
-**Date :** ………
-**Durée :** 1 h 30
-**À remettre :** un dossier `src/` compilable + un document Word ou .txt décrivant vos réponses et vos captures d’écran.
+- **Date :** ………
+- **Durée :** 1 h 15
+- **À remettre :** un dossier `src/` compilable + un document Word ou .txt décrivant vos réponses et vos captures d’écran.
 
 
 # **Partie 1 – Classe de base (10 points)**
 
-### **Question 1 (10 pts)**
+## **Question 1 (10 pts)**
 
 Créer une classe `Film` avec :
 
@@ -34,7 +34,7 @@ Titre : Inception | Réalisateur : Christopher Nolan | Durée : 148 minutes
 
 # **Partie 2 – Héritage et polymorphisme (30 points)**
 
-### **Question 2 (10 pts)**
+## **Question 2 (10 pts)**
 
 Créer une classe `Appareil` avec une méthode `utiliser()` qui affiche :
 
@@ -49,7 +49,7 @@ Utilisation d’un appareil générique
 ...........................................................
 ```
 
-# **Question 3 (10 pts)**
+## **Question 3 (10 pts)**
 
 Créer deux classes qui héritent de `Appareil` :
 
@@ -76,7 +76,7 @@ Créer deux classes qui héritent de `Appareil` :
 ...........................................................
 ```
 
-# **Question 4 (10 pts)**
+## **Question 4 (10 pts)**
 
 Créer une fonction `demarrerUtilisation(Appareil a)` qui prend un objet `Appareil` (ou sous-classe) et appelle `utiliser()`.
 
@@ -107,7 +107,7 @@ Utilisation d’un smartphone moderne
 
 # **Partie 3 – Classes abstraites (20 points)**
 
-# **Question 5 (5 pts)**
+## **Question 5 (5 pts)**
 
 Créer une classe abstraite `Vehicule` contenant une méthode abstraite `double calculVitesse()`.
 
@@ -118,7 +118,7 @@ Créer une classe abstraite `Vehicule` contenant une méthode abstraite `double 
 ...........................................................
 ```
 
-# **Question 6 (10 pts)**
+## **Question 6 (10 pts)**
 
 Créer deux classes concrètes qui héritent de `Vehicule` :
 
@@ -138,7 +138,7 @@ Créer deux classes concrètes qui héritent de `Vehicule` :
 ...........................................................
 ```
 
-# **Question 7 (5 pts)**
+## **Question 7 (5 pts)**
 
 Créer une fonction `afficherVitesse(Vehicule v)` qui affiche la vitesse, quelle que soit la classe :
 
@@ -202,8 +202,9 @@ Erreur : température invalide (inférieure au zéro absolu).
 ```
 
 
+<br/>
 
-## **Partie 5 – Méthodes supplémentaires (15 points)**
+# **Partie 5 – Méthodes supplémentaires (15 points)**
 
 ### **Question 9 (15 pts)**
 
@@ -238,9 +239,9 @@ Erreur : température invalide (inférieure au zéro absolu).
 ...........................................................
 ```
 
+<br/>
 
-
-## **Partie 6 – Mise en œuvre complète (un peu plus difficile – 20 points)**
+# **Partie 6 – Mise en œuvre complète (un peu plus difficile – 20 points)**
 
 ### **Question 10 (20 pts)**
 
