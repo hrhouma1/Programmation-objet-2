@@ -107,7 +107,7 @@ public class Main {
 ```
 
 
-# Explication claire :
+# 04 - Explication claire :
 
 * `ImprimanteVirtuelle` **ne sait pas comment imprimer** → elle **transfère la responsabilité** à un autre objet (`Imprimante`).
 * La ligne clé est :
@@ -125,5 +125,23 @@ public class Main {
 > mais appelle un autre objet pour le faire à sa place.
 
 
+
+# 05 - Déléguant et Délégué 
+
+
+**Déléguant :** `ImprimanteVirtuelle`
+→ Elle reçoit la demande d’impression et la transmet à un autre objet.
+
+**Délégué :** `ImprimanteHP` ou `ImprimanteEpson`
+→ Ce sont les objets qui réalisent effectivement l’impression.
+
+**Ligne où la délégation a lieu :**
+
+```java
+imprimante.imprimer(document);
+```
+
+Ici, `ImprimanteVirtuelle` ne fait pas le travail elle-même.
+Elle délègue la tâche à l’objet `imprimante`, qui exécute la méthode réelle.
 
 
