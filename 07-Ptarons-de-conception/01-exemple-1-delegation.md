@@ -1,3 +1,34 @@
+# 01- ÉNONCÉ
+
+On souhaite concevoir une classe **`ImprimanteVirtuelle`** qui représente une imprimante logique unique pour tout un département.
+Cette imprimante virtuelle doit être capable d’utiliser **différentes imprimantes physiques** (par exemple HP, Epson, Canon, etc.), sans que l’utilisateur ait besoin de connaître les détails techniques de chacune.
+
+L’objectif est d’appliquer le **patron de conception *Délégation*** :
+
+> La classe `ImprimanteVirtuelle` **ne réalise pas directement l’impression**,
+> mais **délègue** cette tâche à un objet d’une autre classe qui implémente le comportement d’impression réel.
+
+L’utilisateur pourra :
+
+* Créer une imprimante virtuelle,
+* Lui associer une imprimante physique (HP, Epson, etc.),
+* Et changer cette imprimante à tout moment sans modifier le code principal.
+
+
+
+# 02 - Résumé 
+
+| Élément                           | Rôle                                                        |
+| --------------------------------- | ----------------------------------------------------------- |
+| `Imprimante`                      | Interface qui définit le comportement attendu.              |
+| `ImprimanteHP`, `ImprimanteEpson` | Classes concrètes qui réalisent l’impression.               |
+| `ImprimanteVirtuelle`             | Classe déléguante qui redirige la tâche.                    |
+| Ligne clé                         | `imprimante.imprimer(document);` → c’est **la délégation**. |
+
+> Ainsi, `ImprimanteVirtuelle` ne connaît pas les détails techniques des imprimantes physiques.
+> Elle **délègue** simplement la responsabilité d’imprimer au bon objet, ce qui illustre parfaitement le **patron de conception Délégation**.
+
+# 03 - Correction 
 
 ```java
 // ===== Interface commune =====
@@ -92,3 +123,7 @@ public class Main {
 
 > La délégation = une classe ne fait pas le travail elle-même,
 > mais appelle un autre objet pour le faire à sa place.
+
+
+
+
