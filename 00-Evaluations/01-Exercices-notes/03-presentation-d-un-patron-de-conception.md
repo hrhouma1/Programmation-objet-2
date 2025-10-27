@@ -23,7 +23,7 @@ Vous devez choisir un autre patron (exemples possibles : Strategy, Adapter, Fact
 
 # 2 -  Livrable attendu
 
-Vous devez produire un court document (PDF, Word ou équivalent) ou une courte présentation orale selon les consignes données en classe. Le contenu doit respecter exactement la structure suivante :
+Vous devez produire un court document (PDF, Word ou équivalent) ou une courte présentation pptx. Le contenu doit respecter exactement la structure suivante :
 
 ### 1. Problème à résoudre (contexte)
 
