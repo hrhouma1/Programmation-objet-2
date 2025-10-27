@@ -93,7 +93,7 @@ ANNEXE 1 (TRÈS IMPORTANT) - Aller un peu plus “forensique Java” 😈
 
 - Objectif : vérifier si `conn1` et `conn2` sont le même objet, afficher clairement ce qu’on compare, et utiliser à la fois `equals`, `==` et l’opérateur ternaire.
 
-*Utiilisez ce `Main.java` pédagogique que vous pouvez montrer en classe tel quel.*
+*Utiilisez ce `Main.java` pédagogique que vous pouvez utiliser tel quel.*
 
 
 
