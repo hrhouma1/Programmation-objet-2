@@ -207,6 +207,116 @@ directeurGeneral.print();
 → a une **liste d’`Employee`**
 → appelle `print()` sur chacun.
 
+<br/>
+
+# ANENXE 1
+
+
+
+Le problème que **Composite** résout, c’est exactement celui-là :
+
+> **“Dans mon modèle, j’ai parfois UN objet simple… et parfois un GROUPE d’objets… et mon code devient moche parce que je dois traiter ces deux cas différemment.”**
+
+Je te le déroule.
+
+---
+
+## 1. Le problème de départ
+
+Dans plein d’apps, tu as une **structure en arbre** :
+
+* Entreprise → managers → employés
+* Système de fichiers → dossier → sous-dossier → fichier
+* Cours → modules → leçons
+* UI → conteneur → boutons, labels…
+
+Dans ces structures, il y a **deux types** d’objets :
+
+1. **les feuilles** → rien en dessous (un fichier, un développeur, une leçon)
+2. **les composites** → contiennent d’autres objets (un dossier, un manager, un module)
+
+👉 Et toi, dans ton code, tu veux faire **la même opération** sur les deux (afficher, calculer un coût, exporter…).
+
+Sans Composite, tu te retrouves à faire ça partout :
+
+```java
+if (objet est un dossier) {
+    // alors je parcours les enfants
+} else {
+    // c’est un fichier → j’affiche
+}
+```
+
+ou
+
+```java
+if (objet est un manager) {
+    // afficher lui + ses subordonnés
+} else {
+    // afficher juste l’employé
+}
+```
+
+Résultat :
+
+* du **if/else** partout
+* du code **dupliqué**
+* chaque fois que tu ajoutes un nouveau type de “groupe”, tu dois **revenir modifier** le code client.
+
+---
+
+## 2. Ce que fait Composite
+
+Composite dit :
+
+> “Et si **feuille** et **groupe** avaient **la même interface** ?
+> Comme ça, le client ne se pose plus de question.”
+
+Donc tu écris :
+
+```java
+interface Employee {
+    void print();
+}
+```
+
+et après ça, **que ce soit** un `Developer` **ou** un `Manager`, tu peux faire :
+
+```java
+employee.print();
+```
+
+sans `if`.
+
+Le composite, lui, fait la récursion :
+
+```java
+for (Employee e : subordinates) {
+    e.print();
+}
+```
+
+---
+
+## 3. Donc le problème exact
+
+On peut le formuler comme ça (version prof) :
+
+1. **Problème structurel** : représenter des objets organisés en hiérarchie (arbre) où certains objets peuvent contenir d’autres objets du même type.
+2. **Problème d’uniformité** : permettre au code client de **manipuler de la même façon** un objet simple et un ensemble d’objets.
+3. **Problème de complexité du client** : éviter que le client ait à tester sans arrêt “est-ce une feuille ou un composite ?”.
+
+👉 **Composite** résout ces 3 problèmes en donnant **une interface commune** et en déplaçant la complexité **à l’intérieur** des composites.
+
+---
+
+## 4. Phrase à retenir
+
+> “Sans Composite, le client doit savoir si c’est un élément seul ou un groupe.
+> Avec Composite, le client s’en fiche : il appelle toujours la même méthode.”
+
+C’est ça qu’il résout.
+
 **Idée à retenir** :
 
 > Composite = *“un objet peut contenir d’autres objets du même type”*
