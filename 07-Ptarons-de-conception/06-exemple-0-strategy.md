@@ -1,3 +1,60 @@
+# STRATEGY - SYNOPSIS
+
+Le plus simple :
+
+* **Problème** : j’ai **plusieurs façons** de faire la même chose.
+
+  * ex. décompresser en **ZIP**
+  * ou décompresser en **RAR**
+  * ou afficher un graphique **barres** ou **lignes**
+  * ou calculer un **rabais étudiant** ou **rabais entreprise**
+
+* **Ce que je ne veux PAS** : écrire partout
+
+  ```java
+  if (type == "ZIP") { ... }
+  else if (type == "RAR") { ... }
+  else if (...)
+  ```
+
+  parce que ça devient sale, long, et à chaque nouveau cas je dois rouvrir le fichier.
+
+* **Strategy**, c’est l’idée suivante :
+
+  > “Je vais **définir une forme** de l’algorithme (une interface),
+  > et **brancher** dessus la bonne version au bon moment.”
+
+  Donc :
+
+  1. Je définis **la forme** :
+
+     ```java
+     interface DecompressionStrategy {
+         void decompress(String file);
+     }
+     ```
+  2. Je fais **une classe par façon de faire** :
+
+     * `ZipDecompressionStrategy`
+     * `RarDecompressionStrategy`
+  3. Dans mon code principal, je dis juste :
+
+     ```java
+     strategy.decompress(file);
+     ```
+
+     → je ne sais pas **comment** ça marche, je sais juste que “c’est une stratégie”.
+
+* **Image** :
+  C’est comme **une prise électrique** (le contexte) et **plusieurs chargeurs** (les stratégies).
+  La prise dit : “donnez-moi un chargeur compatible”, et ensuite elle l’utilise.
+  Elle ne réécrit pas son code pour chaque marque de chargeur.
+
+* **Phrase à dire aux étudiants** :
+
+  > Strategy = **je ne change pas le code qui utilise l’algorithme, je change juste l’algorithme.**
+
+
 # 01 – ÉNONCÉ
 
 On veut concevoir un petit système capable de **décompresser des fichiers** selon **leur format**.
