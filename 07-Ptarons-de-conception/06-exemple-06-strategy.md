@@ -17,7 +17,7 @@ Le plus simple :
   else if (...)
   ```
 
-  parce que ça devient sale, long, et à chaque nouveau cas je dois rouvrir le fichier.
+  parce que ça devient mal organisé, long, et à chaque nouveau cas je dois rouvrir le fichier.
 
 * **Strategy**, c’est l’idée suivante :
 
@@ -50,7 +50,7 @@ Le plus simple :
   La prise dit : “donnez-moi un chargeur compatible”, et ensuite elle l’utilise.
   Elle ne réécrit pas son code pour chaque marque de chargeur.
 
-* **Phrase à dire aux étudiants** :
+* **Phrase à retenir** :
 
   > Strategy = **je ne change pas le code qui utilise l’algorithme, je change juste l’algorithme.**
 
