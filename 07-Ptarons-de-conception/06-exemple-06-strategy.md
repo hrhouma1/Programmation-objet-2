@@ -1,6 +1,5 @@
 # STRATEGY - SYNOPSIS
 
-Le plus simple :
 
 * **Problème** : j’ai **plusieurs façons** de faire la même chose.
 
