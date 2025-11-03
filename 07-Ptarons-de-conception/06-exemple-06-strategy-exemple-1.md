@@ -1,6 +1,5 @@
 # STRATEGY - SYNOPSIS
 
-
 * **Problème** : j’ai **plusieurs façons** de faire la même chose.
 
   * ex. décompresser en **ZIP**
@@ -53,6 +52,7 @@
 
   > Strategy = **je ne change pas le code qui utilise l’algorithme, je change juste l’algorithme.**
 
+<br/>
 
 # 01 – ÉNONCÉ
 
@@ -76,7 +76,7 @@ Concrètement, on veut :
 3. Un **contexte** `FileDecompressor` qui **ne fait pas le travail lui-même**, mais **délègue à la stratégie** choisie.
 4. Le client (ex. `main`) choisit la bonne stratégie selon le fichier, **sans modifier** le contexte.
 
----
+<br/>
 
 # 02 – Résumé
 
@@ -90,114 +90,88 @@ Concrètement, on veut :
 
 > **Idée clef** : on ne change pas le code du contexte pour ajouter un nouveau format, on ajoute une **nouvelle stratégie**.
 
----
+<br/>
 
 # 03 – Correction (code complet)
 
+
 ```java
-// ===== 1) L'interface STRATEGY =====
-public interface DecompressionStrategy {
-    void decompress(String filePath);
-}
+// Fichier: App.java
+public class App {
+
+    // 1) STRATEGY : la "forme" de l'algorithme
+    interface DecompressionStrategy {
+        void decompress(String filePath);
+    }
 ```
 
 ```java
-// ===== 2) Stratégie concrète pour les .zip =====
-public class ZipDecompressionStrategy implements DecompressionStrategy {
-    @Override
-    public void decompress(String filePath) {
-        // Ici on simule seulement
-        System.out.println("[ZIP] Décompression de " + filePath + " avec WinZip...");
-        // Dans un vrai système : appel à une lib ZIP
-    }
-}
-```
-
-```java
-// ===== 3) Stratégie concrète pour les .rar =====
-public class RarDecompressionStrategy implements DecompressionStrategy {
-    @Override
-    public void decompress(String filePath) {
-        // Simulation
-        System.out.println("[RAR] Décompression de " + filePath + " avec WinRar...");
-        // Dans un vrai système : appel à une lib RAR
-    }
-}
-```
-
-```java
-// ===== 4) CONTEXTE : utilise une stratégie, mais ne connaît PAS les détails =====
-public class FileDecompressor {
-
-    // Stratégie actuelle
-    private DecompressionStrategy strategy;
-
-    // On peut imposer une stratégie au départ
-    public FileDecompressor(DecompressionStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    // On peut aussi la changer à chaud
-    public void setStrategy(DecompressionStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    // Méthode métier : décompresser un fichier
-    public void decompress(String filePath) {
-        if (strategy == null) {
-            throw new IllegalStateException("Aucune stratégie de décompression définie !");
-        }
-        // *** STRATEGY ICI ***
-        strategy.decompress(filePath);
-    }
-}
-```
-
-Pour éviter de faire des `if (endsWith(".zip")) ...` partout dans le code client, on peut ajouter une **petite fabrique** (ce n’est pas obligatoire dans Strategy, mais ça rend l’exemple pédagogique) :
-
-```java
-// ===== 5) Petite factory pour choisir la bonne stratégie selon l'extension =====
-public class DecompressionStrategyFactory {
-
-    public static DecompressionStrategy forFile(String filePath) {
-        if (filePath == null) {
-            throw new IllegalArgumentException("Nom de fichier nul");
-        }
-        String lower = filePath.toLowerCase();
-        if (lower.endsWith(".zip")) {
-            return new ZipDecompressionStrategy();
-        } else if (lower.endsWith(".rar")) {
-            return new RarDecompressionStrategy();
-        } else {
-            throw new UnsupportedOperationException("Format non supporté : " + filePath);
+    // 2) Stratégie .zip
+    static class ZipDecompressionStrategy implements DecompressionStrategy {
+        @Override
+        public void decompress(String filePath) {
+            System.out.println("[ZIP] Décompression de " + filePath + " avec WinZip...");
+            // Appel lib ZIP réel ici si besoin
         }
     }
-}
 ```
 
-Et enfin le **programme principal** :
-
 ```java
-public class Main {
+    // 3) Stratégie .rar
+    static class RarDecompressionStrategy implements DecompressionStrategy {
+        @Override
+        public void decompress(String filePath) {
+            System.out.println("[RAR] Décompression de " + filePath + " avec WinRar...");
+            // Appel lib RAR réel ici si besoin
+        }
+    }
+```
+```java
+    // 4) CONTEXTE : ne connaît pas les détails, délègue à la stratégie
+    static class FileDecompressor {
+        private DecompressionStrategy strategy;
+
+        public FileDecompressor(DecompressionStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void setStrategy(DecompressionStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void decompress(String filePath) {
+            if (strategy == null) {
+                throw new IllegalStateException("Aucune stratégie de décompression définie !");
+            }
+            strategy.decompress(filePath); // <<< STRATEGY ici
+        }
+    }
+
+    // 5) Démo minimale : choix "local" de la stratégie (2 if), sans Factory
     public static void main(String[] args) {
-
         String f1 = "backup-2025-10-31.zip";
         String f2 = "cours-informatique.rar";
 
-        // 1. On choisit la bonne stratégie selon le fichier
-        DecompressionStrategy s1 = DecompressionStrategyFactory.forFile(f1);
-        DecompressionStrategy s2 = DecompressionStrategyFactory.forFile(f2);
+        DecompressionStrategy s1 = chooseStrategy(f1);
+        DecompressionStrategy s2 = chooseStrategy(f2);
 
-        // 2. On crée un contexte avec une première stratégie
         FileDecompressor decompressor = new FileDecompressor(s1);
-        decompressor.decompress(f1); // --> utilisera la stratégie ZIP
+        decompressor.decompress(f1);      // -> ZIP
 
-        // 3. Plus tard : on change la stratégie
         decompressor.setStrategy(s2);
-        decompressor.decompress(f2); // --> utilisera la stratégie RAR
+        decompressor.decompress(f2);      // -> RAR
+    }
+
+    // Helper **local** (pas un patron Factory) : centralise 2 if au même endroit
+    private static DecompressionStrategy chooseStrategy(String filePath) {
+        String lower = filePath.toLowerCase();
+        if (lower.endsWith(".zip")) return new ZipDecompressionStrategy();
+        if (lower.endsWith(".rar")) return new RarDecompressionStrategy();
+        throw new UnsupportedOperationException("Format non supporté : " + filePath);
     }
 }
 ```
+
 
 **Sortie attendue (simulation)** :
 
@@ -206,11 +180,32 @@ public class Main {
 [RAR] Décompression de cours-informatique.rar avec WinRar...
 ```
 
----
+> **Pourquoi c’est simple :** le **Context** reste propre (`strategy.decompress(file)`),
+> et tu centralises un tout petit choix (2 `if`) dans une seule méthode.
+
+<br/>
+
+### 03 bis – (Facultatif, à ignorer pour le moment) Mini-Factory (plus tard dans le cours)
+
+> **Tu peux ignorer cette section.** Elle n’est là que pour montrer l’évolution naturelle si, un jour, tu veux **retirer** même ces deux `if` du `main`.
+
+```java
+// Option FACULTATIVE: petite Factory (peut être dans le même fichier)
+class DecompressionStrategyFactory {
+    public static App.DecompressionStrategy forFile(String filePath) {
+        String lower = filePath.toLowerCase();
+        if (lower.endsWith(".zip")) return new App.ZipDecompressionStrategy();
+        if (lower.endsWith(".rar")) return new App.RarDecompressionStrategy();
+        throw new UnsupportedOperationException("Format non supporté : " + filePath);
+    }
+}
+```
+
+<br/>
 
 # 04 – Explication claire
 
-* Dans **Strategy**, le **contexte** (`FileDecompressor`) **ne met pas de `if`/`else`** pour savoir *comment* décompresser.
+* Dans **Strategy**, le **contexte** (`FileDecompressor`) **ne met pas de `if/else`** pour savoir *comment* décompresser.
 
 * Il dit juste :
 
@@ -220,23 +215,16 @@ public class Main {
 
   → c’est **la ligne-clé** (comme dans ta délégation).
 
-* Le choix de **quelle** stratégie utiliser (ZIP, RAR, autre) est déplacé **en dehors** du contexte :
-
-  * soit dans le **client** (`main`) ;
-  * soit dans une **factory** (comme `DecompressionStrategyFactory` ci-dessus) ;
-  * soit dans l’UI (boutons “décompresser en ZIP”, “décompresser en RAR”).
+* **Ici**, le choix de **quelle** stratégie utiliser (ZIP, RAR) est fait **localement** par `chooseStrategy(...)` (deux `if` au même endroit, pas de Factory).
+  Si un jour tu veux éliminer ces `if`, tu pourras **remplacer** `chooseStrategy` par la **Factory facultative** ci-dessus — **sans toucher** au Context.
 
 Résultat :
 
 1. **Famille d’algorithmes** : toutes les classes qui implémentent `DecompressionStrategy`.
 2. **Interchangeables** : on peut faire `setStrategy(...)` à chaud.
-3. **Évolutif** : tu ajoutes `TarGzDecompressionStrategy`, tu ne touches PAS au contexte.
+3. **Évolutif** : tu ajoutes `TarGzDecompressionStrategy`, tu **ne touches pas** à `FileDecompressor` (seulement `chooseStrategy` → 1 ligne).
 
-C’est exactement ce que tu décrivais dans ton contexte :
-
-> “Pas besoin de faire de `if else` ou `switch case` à l’intérieur de Context”.
-
----
+<br/>
 
 # 05 – Context & Strategy (diagramme verbal)
 
@@ -258,7 +246,87 @@ C’est exactement ce que tu décrivais dans ton contexte :
 
 * **Client** :
 
-  * choisit la stratégie
+  * choisit la stratégie (ici via `chooseStrategy(...)`)
   * la donne au contexte
   * appelle le contexte normalement
+
+
+<br/>
+
+
+### Tous le code
+
+```java
+// Fichier: App.java
+public class App {
+
+    // 1) STRATEGY: forme de l'algorithme
+    interface DecompressionStrategy {
+        void decompress(String filePath);
+    }
+
+    // 2) Stratégie .zip
+    static class ZipDecompressionStrategy implements DecompressionStrategy {
+        @Override
+        public void decompress(String filePath) {
+            System.out.println("[ZIP] Décompression de " + filePath + " avec WinZip...");
+            // Ici tu appellerais la lib ZIP réelle
+        }
+    }
+
+    // 3) Stratégie .rar
+    static class RarDecompressionStrategy implements DecompressionStrategy {
+        @Override
+        public void decompress(String filePath) {
+            System.out.println("[RAR] Décompression de " + filePath + " avec WinRar...");
+            // Ici tu appellerais la lib RAR réelle
+        }
+    }
+
+    // 4) CONTEXTE: ne connaît pas les détails, délègue à la stratégie
+    static class FileDecompressor {
+        private DecompressionStrategy strategy;
+
+        public FileDecompressor(DecompressionStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void setStrategy(DecompressionStrategy strategy) {
+            this.strategy = strategy;
+        }
+
+        public void decompress(String filePath) {
+            if (strategy == null) {
+                throw new IllegalStateException("Aucune stratégie de décompression définie !");
+            }
+            strategy.decompress(filePath); // <-- STRATEGY ici
+        }
+    }
+
+    // 5) Demo minimale: on choisit la stratégie avec 2 if (pas de Factory)
+    public static void main(String[] args) {
+        String f1 = "backup-2025-10-31.zip";
+        String f2 = "cours-informatique.rar";
+
+        // Choix simple (et centralisé) de la stratégie
+        DecompressionStrategy s1 = chooseStrategy(f1);
+        DecompressionStrategy s2 = chooseStrategy(f2);
+
+        FileDecompressor decompressor = new FileDecompressor(s1);
+        decompressor.decompress(f1);      // -> ZIP
+
+        decompressor.setStrategy(s2);
+        decompressor.decompress(f2);      // -> RAR
+    }
+
+    // Petit helper local (pas une “Factory” au sens patron) : juste 2 if
+    private static DecompressionStrategy chooseStrategy(String filePath) {
+        String lower = filePath.toLowerCase();
+        if (lower.endsWith(".zip")) return new ZipDecompressionStrategy();
+        if (lower.endsWith(".rar")) return new RarDecompressionStrategy();
+        throw new UnsupportedOperationException("Format non supporté : " + filePath);
+    }
+}
+```
+
 
