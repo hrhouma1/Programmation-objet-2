@@ -99,7 +99,7 @@ sequenceDiagram
 
 
 
-</details>
+<details>
 <summary> Correction </summary>
 
 
