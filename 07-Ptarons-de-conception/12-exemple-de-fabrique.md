@@ -365,7 +365,7 @@ public class App {
 
 
 
-## Explication pédagogique rapide (pour toi / pour tes notes de cours)
+## Explication pédagogique rapide 
 
 * **Fabrique simple (`BoissonFactory`)**
   Centralise les `new Espresso()`, `new Latte()`, etc.
@@ -377,7 +377,7 @@ public class App {
 
 ---
 
-## Idées d’exercices dérivés pour tes étudiants
+## Idées d’exercices dérivés
 
 Tu peux leur demander de :
 
