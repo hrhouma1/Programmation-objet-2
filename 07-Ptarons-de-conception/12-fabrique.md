@@ -1,4 +1,15 @@
+#  Introduction
+
+Le **patron de conception Fabrique** sert à centraliser et à encapsuler la création d’objets, au lieu de faire des `new` partout dans le code.
+L’idée est que le code client demande un objet à une fabrique (par exemple “donne-moi une voiture électrique”) sans connaître la classe concrète créée.
+Cela permet de **cacher les détails de construction** (paramètres complexes, dépendances, configuration) et de les modifier à un seul endroit si nécessaire.
+Le patron Fabrique facilite aussi le remplacement d’implémentations (changer de base de données, de système de paiement, de thème graphique) sans toucher au reste de l’application.
+On parle de **Fabrique abstraite** lorsqu’une fabrique est chargée de créer **toute une famille d’objets cohérents** (par exemple tous les composants d’un même thème d’interface).
+
+
 #  Le café JavaLatte et les menus saisonniers
+
+
 
 Le café **JavaLatte** a une application mobile.
 L’appli doit :
